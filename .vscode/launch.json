@@ -1,0 +1,32 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Test RevSport Login",
+            "skipFiles": ["<node_internals>/**"],
+            "program": "${workspaceFolder}/auth/revsport-auth.js",
+            "console": "integratedTerminal",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Scrape Boat Data",
+            "skipFiles": ["<node_internals>/**"],
+            "program": "${workspaceFolder}/scraper/boat-scraper.js",
+            "console": "integratedTerminal",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Scrape Calendar Data",
+            "skipFiles": ["<node_internals>/**"],
+            "program": "${workspaceFolder}/scraper/calendar-scraper.js",
+            "console": "integratedTerminal",
+            "envFile": "${workspaceFolder}/.env"
+        }
+   ]
+}
