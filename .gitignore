@@ -20,3 +20,12 @@ Thumbs.db
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# Output files (generated data)
+weekly-bookings.json
+weekly-bookings-summary.txt
+*.backup.*
+
+# Build output
+dist/
+*.tsbuildinfo

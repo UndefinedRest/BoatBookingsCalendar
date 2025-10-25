@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir:*)",
+      "Bash(findstr:*)",
+      "Bash(tree:*)",
+      "Bash(node auth/revsport-auth.js:*)",
+      "Bash(node test-portal.js:*)",
+      "Bash(node test-portal-v2.js:*)",
+      "Bash(node test-portal-debug.js:*)",
+      "Bash(node inspect-login-form.js:*)",
+      "Bash(node test-wordpress-endpoints.js:*)",
+      "Bash(node analyze-calendar-apis.js:*)",
+      "Bash(node:*)",
+      "Bash(npm install)",
+      "Bash(npm run dev:*)",
+      "Bash(npm run fetch:*)",
+      "Bash(cat:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

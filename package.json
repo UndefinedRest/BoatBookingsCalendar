@@ -1,19 +1,33 @@
 {
-  "name": "lmrc-booking-system",
-  "version": "1.0.0",
-  "main": "index.js",
+  "name": "lmrc-booking-viewer",
+  "version": "2.0.0",
+  "description": "LMRC Booking Viewer - fetches and displays 7-day booking view from RevSport",
+  "main": "dist/index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsx src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "fetch": "tsx src/index.ts",
+    "type-check": "tsc --noEmit"
   },
-  "keywords": [],
+  "keywords": ["lmrc", "booking", "rowing", "revsport"],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
-    "axios": "^1.12.2",
+    "axios": "^1.6.0",
     "axios-cookiejar-support": "^6.0.4",
-    "cheerio": "^1.1.2",
-    "dotenv": "^17.2.3",
-    "tough-cookie": "^5.1.2"
+    "axios-retry": "^4.0.0",
+    "cheerio": "^1.0.0-rc.12",
+    "date-fns": "^3.0.0",
+    "dotenv": "^16.3.0",
+    "tough-cookie": "^5.0.0",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/tough-cookie": "^4.0.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.0"
   }
 }
