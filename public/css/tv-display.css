@@ -1,0 +1,509 @@
+/**
+ * TV Display Styles for 55" Screen at 2m Viewing Distance
+ * Optimized for 1920x1080 resolution
+ * Font sizes: 60-96pt for readability from 2 meters
+ */
+
+/* ===== CSS Variables ===== */
+:root {
+  /* Colors */
+  --bg-primary: #FFFFFF;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+
+  --status-available: #10b981;
+  --status-booked: #dc2626;
+  --status-partial: #d97706;
+
+  --border-light: #e2e8f0;
+  --border-medium: #cbd5e1;
+  --border-dark: #1e293b;
+
+  --accent-blue: #0ea5e9;
+  --accent-navy: #1e40af;
+
+  /* Typography - optimized for 2m viewing distance */
+  --font-mega: 96px;      /* Main header */
+  --font-huge: 72px;      /* Date/time */
+  --font-xlarge: 60px;    /* Boat names */
+  --font-large: 52px;     /* Section headers */
+  --font-medium: 48px;    /* Column headers */
+  --font-base: 40px;      /* Details, nicknames */
+  --font-small: 36px;     /* Cell text, member names */
+  --font-tiny: 32px;      /* Legend, footer */
+
+  /* Spacing */
+  --gap-huge: 60px;
+  --gap-large: 40px;
+  --gap-medium: 24px;
+  --gap-small: 16px;
+  --gap-tiny: 8px;
+
+  --margin-screen: 40px;
+  --padding-cell: 24px;
+
+  /* Layout */
+  --row-height: 160px;
+  --status-size: 80px;
+}
+
+/* ===== Reset & Base ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  overflow: hidden; /* No scrolling on TV display */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== TV Display Container ===== */
+.tv-display {
+  width: 1920px;
+  height: 1080px;
+  background: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+  padding: var(--margin-screen);
+}
+
+/* ===== Header ===== */
+.display-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--gap-huge);
+  padding-bottom: var(--gap-medium);
+  border-bottom: 6px solid var(--border-dark);
+}
+
+.display-header h1 {
+  font-size: var(--font-mega);
+  font-weight: 700;
+  color: var(--accent-navy);
+  letter-spacing: -2px;
+}
+
+.datetime {
+  text-align: right;
+}
+
+.datetime .day {
+  font-size: var(--font-medium);
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: var(--gap-tiny);
+}
+
+.datetime .time {
+  font-size: var(--font-huge);
+  font-weight: 700;
+  color: var(--accent-blue);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -1px;
+}
+
+/* ===== Loading Screen ===== */
+.loading-screen,
+.error-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: var(--gap-large);
+}
+
+.loading-spinner {
+  width: 120px;
+  height: 120px;
+  border: 12px solid var(--border-light);
+  border-top: 12px solid var(--accent-blue);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-screen p,
+.error-screen p {
+  font-size: var(--font-large);
+  color: var(--text-secondary);
+}
+
+.error-screen {
+  color: var(--status-booked);
+}
+
+.error-icon {
+  font-size: 120px;
+}
+
+.error-screen h2 {
+  font-size: var(--font-huge);
+  font-weight: 700;
+  margin-bottom: var(--gap-small);
+}
+
+.error-message {
+  font-size: var(--font-base) !important;
+  color: var(--text-primary) !important;
+}
+
+.retry-info {
+  font-size: var(--font-small) !important;
+  color: var(--text-secondary) !important;
+  margin-top: var(--gap-medium);
+}
+
+/* ===== Main View Container ===== */
+.view-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.view-title {
+  font-size: var(--font-large);
+  font-weight: 700;
+  color: var(--accent-navy);
+  margin-bottom: var(--gap-large);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ===== No Bookings State ===== */
+.no-bookings {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: var(--gap-medium);
+}
+
+.celebration-icon {
+  font-size: 160px;
+  margin-bottom: var(--gap-medium);
+}
+
+.no-bookings h3 {
+  font-size: var(--font-huge);
+  font-weight: 700;
+  color: var(--status-available);
+}
+
+.no-bookings p {
+  font-size: var(--font-large);
+  color: var(--text-secondary);
+}
+
+/* ===== Booking Grid ===== */
+.booking-grid {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.booking-grid thead th {
+  background: var(--accent-navy);
+  color: white;
+  font-weight: 700;
+  padding: var(--padding-cell);
+  border: 2px solid var(--border-dark);
+  vertical-align: top;
+}
+
+.booking-grid .boat-column {
+  width: 35%;
+  text-align: left;
+  font-size: var(--font-medium);
+}
+
+.booking-grid .day-column {
+  width: 22%;
+  text-align: center;
+  font-size: var(--font-medium);
+}
+
+.booking-grid .week-column {
+  width: 21%;
+  text-align: center;
+  font-size: var(--font-medium);
+}
+
+.day-header {
+  font-size: var(--font-medium);
+  margin-bottom: var(--gap-tiny);
+}
+
+.date-label {
+  font-size: var(--font-base);
+  font-weight: 400;
+  opacity: 0.9;
+  margin-bottom: var(--gap-small);
+}
+
+.session-labels {
+  font-size: var(--font-base);
+  font-weight: 400;
+  opacity: 0.85;
+  display: flex;
+  justify-content: center;
+  gap: var(--gap-small);
+}
+
+.session-divider {
+  opacity: 0.5;
+}
+
+/* ===== Boat Rows ===== */
+.booking-grid tbody tr {
+  border-bottom: 3px solid var(--border-medium);
+  transition: background-color 0.3s ease;
+}
+
+.booking-grid tbody tr:hover {
+  background: #f8fafc;
+}
+
+.booking-grid tbody td {
+  padding: var(--padding-cell);
+  border-right: 2px solid var(--border-light);
+  vertical-align: middle;
+  height: var(--row-height);
+}
+
+.booking-grid tbody td:last-child {
+  border-right: none;
+}
+
+/* ===== Boat Info Cell ===== */
+.boat-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-tiny);
+}
+
+.boat-header {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-small);
+}
+
+.boat-icon {
+  font-size: var(--font-large);
+  flex-shrink: 0;
+}
+
+.boat-name {
+  font-size: var(--font-xlarge);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--text-primary);
+}
+
+.boat-nickname {
+  font-size: var(--font-base);
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.boat-specs {
+  font-size: var(--font-small);
+  color: var(--text-secondary);
+  font-weight: 400;
+  display: flex;
+  gap: var(--gap-small);
+}
+
+.boat-type-badge {
+  background: var(--accent-blue);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: var(--font-small);
+  font-weight: 600;
+}
+
+.boat-weight {
+  color: var(--text-secondary);
+}
+
+/* ===== Status Cells ===== */
+.status-cell {
+  text-align: center;
+}
+
+.session-status {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--gap-medium);
+}
+
+.status-indicator {
+  width: var(--status-size);
+  height: var(--status-size);
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.status-indicator.available {
+  background: var(--status-available);
+}
+
+.status-indicator.booked {
+  background: var(--status-booked);
+}
+
+.status-indicator.partial {
+  background: var(--status-partial);
+}
+
+.member-name {
+  font-size: var(--font-small);
+  color: var(--text-primary);
+  font-weight: 500;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ===== Week Summary Cell ===== */
+.week-summary {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--gap-small);
+  flex-wrap: wrap;
+}
+
+.week-dot {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.week-dot.available {
+  background: var(--status-available);
+}
+
+.week-dot.booked {
+  background: var(--status-booked);
+}
+
+.week-note {
+  font-size: var(--font-small);
+  color: var(--text-secondary);
+  text-align: center;
+  width: 100%;
+  margin-top: var(--gap-tiny);
+}
+
+/* ===== Footer ===== */
+.display-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--gap-large);
+  padding-top: var(--gap-medium);
+  border-top: 3px solid var(--border-medium);
+}
+
+.view-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-tiny);
+}
+
+.view-label {
+  font-size: var(--font-small);
+  font-weight: 600;
+  color: var(--accent-navy);
+}
+
+.view-note {
+  font-size: var(--font-tiny);
+  color: var(--text-secondary);
+}
+
+.legend {
+  display: flex;
+  gap: var(--gap-large);
+  align-items: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-small);
+  font-size: var(--font-tiny);
+  font-weight: 500;
+}
+
+.legend-item .status-indicator {
+  width: 40px;
+  height: 40px;
+}
+
+.refresh-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--gap-tiny);
+  font-size: var(--font-tiny);
+  color: var(--text-secondary);
+}
+
+.auto-refresh {
+  opacity: 0.7;
+}
+
+/* ===== Utility Classes ===== */
+.hidden {
+  display: none !important;
+}
+
+/* ===== Animations ===== */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.view-container {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Cell update flash */
+@keyframes flash {
+  0% { background: #fef3c7; }
+  100% { background: inherit; }
+}
+
+.cell-updated {
+  animation: flash 1s ease-out;
+}
+
+/* Time pulse on minute change */
+@keyframes timePulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.time-changed {
+  animation: timePulse 0.5s ease-in-out;
+}

@@ -64,6 +64,11 @@ export function createApp(): Express {
     res.sendFile(join(publicPath, 'index.html'));
   });
 
+  // Serve TV display for /tv
+  app.get('/tv', (_req, res) => {
+    res.sendFile(join(publicPath, 'tv.html'));
+  });
+
   // 404 handler
   app.use(notFoundHandler);
 
