@@ -1,6 +1,6 @@
 /**
- * TV Display Controller
- * Manages the 55" TV booking display board
+ * TV Display Controller - Two Column Layout
+ * Shows ALL boats split into Club (left) and Race (right) columns
  */
 
 class TVDisplayController {
@@ -14,14 +14,11 @@ class TVDisplayController {
       errorScreen: document.getElementById('errorScreen'),
       errorMessage: document.getElementById('errorMessage'),
       mainView: document.getElementById('mainView'),
-      noBookings: document.getElementById('noBookings'),
-      bookingGrid: document.getElementById('bookingGrid'),
-      bookingGridBody: document.getElementById('bookingGridBody'),
+      clubBoatsList: document.getElementById('clubBoatsList'),
+      raceBoatsList: document.getElementById('raceBoatsList'),
       currentDay: document.getElementById('currentDay'),
       currentTime: document.getElementById('currentTime'),
-      todayDate: document.getElementById('todayDate'),
-      tomorrowDate: document.getElementById('tomorrowDate'),
-      weekDates: document.getElementById('weekDates'),
+      todayDateFooter: document.getElementById('todayDateFooter'),
       lastUpdated: document.getElementById('lastUpdated'),
     };
 
@@ -97,222 +94,155 @@ class TVDisplayController {
   }
 
   /**
-   * Render the booking grid
+   * Render the two-column boat display
    */
   render() {
     if (!this.bookingData) return;
 
-    // Update date headers
-    this.updateDateHeaders();
+    // Split boats into Club and Race
+    const { clubBoats, raceBoats } = this.splitBoatsByClassification();
 
-    // Filter boats that have bookings today or tomorrow
-    const boatsWithBookings = this.getBoatsWithRecentBookings();
-
-    if (boatsWithBookings.length === 0) {
-      // Show "all available" message
-      this.elements.noBookings.classList.remove('hidden');
-      this.elements.bookingGrid.classList.add('hidden');
-      return;
-    }
-
-    // Hide "no bookings" message
-    this.elements.noBookings.classList.add('hidden');
-    this.elements.bookingGrid.classList.remove('hidden');
-
-    // Clear existing rows
-    this.elements.bookingGridBody.innerHTML = '';
-
-    // Render each boat row
-    boatsWithBookings.forEach(boat => {
-      const row = this.createBoatRow(boat);
-      this.elements.bookingGridBody.appendChild(row);
+    console.log('[TV Display] Rendering boats:', {
+      club: clubBoats.length,
+      race: raceBoats.length
     });
 
-    console.log('[TV Display] Rendered', boatsWithBookings.length, 'boats with bookings');
-  }
+    // Render club boats (left column)
+    this.elements.clubBoatsList.innerHTML = '';
+    clubBoats.forEach(boat => {
+      const entry = this.createBoatEntry(boat);
+      this.elements.clubBoatsList.appendChild(entry);
+    });
 
-  /**
-   * Get boats that have bookings today or tomorrow
-   */
-  getBoatsWithRecentBookings() {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-
-    const dayAfterTomorrow = new Date(today);
-    dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 2);
-
-    return this.bookingData.boats.filter(boat => {
-      return boat.bookings.some(booking => {
-        const bookingDate = new Date(booking.date);
-        bookingDate.setHours(0, 0, 0, 0);
-        return bookingDate >= today && bookingDate < dayAfterTomorrow;
-      });
+    // Render race boats (right column)
+    this.elements.raceBoatsList.innerHTML = '';
+    raceBoats.forEach(boat => {
+      const entry = this.createBoatEntry(boat);
+      this.elements.raceBoatsList.appendChild(entry);
     });
   }
 
   /**
-   * Create a table row for a boat
+   * Split boats by classification (Club vs Race) and group by type
    */
-  createBoatRow(boat) {
-    const row = document.createElement('tr');
+  splitBoatsByClassification() {
+    const clubBoats = [];
+    const raceBoats = [];
 
-    // Boat info cell
-    const boatCell = document.createElement('td');
-    boatCell.innerHTML = this.renderBoatInfo(boat);
-    row.appendChild(boatCell);
+    this.bookingData.boats.forEach(boat => {
+      // Filter out boats with Unknown type
+      if (boat.type === 'Unknown') {
+        return;
+      }
 
-    // Today cell (both sessions)
-    const todayCell = document.createElement('td');
-    todayCell.className = 'status-cell';
-    todayCell.innerHTML = this.renderDayStatus(boat, 0); // Day 0 = today
-    row.appendChild(todayCell);
+      // Race boats: classification = 'R' (Racer)
+      // Club boats: classification = 'T' (Training) or 'RT'
+      if (boat.classification === 'R') {
+        raceBoats.push(boat);
+      } else {
+        clubBoats.push(boat);
+      }
+    });
 
-    // Tomorrow cell (both sessions)
-    const tomorrowCell = document.createElement('td');
-    tomorrowCell.className = 'status-cell';
-    tomorrowCell.innerHTML = this.renderDayStatus(boat, 1); // Day 1 = tomorrow
-    row.appendChild(tomorrowCell);
+    // Sort by type (4X, 2X, 1X), then by nickname within type
+    const typeOrder = { '4X': 1, '2X': 2, '1X': 3 };
+    const getBoatName = (boat) => boat.nickname || boat.displayName;
 
-    // Rest of week cell
-    const weekCell = document.createElement('td');
-    weekCell.className = 'status-cell';
-    weekCell.innerHTML = this.renderWeekSummary(boat);
-    row.appendChild(weekCell);
+    const sortBoats = (a, b) => {
+      // Sort by type first
+      const typeA = typeOrder[a.type] || 999;
+      const typeB = typeOrder[b.type] || 999;
+      if (typeA !== typeB) {
+        return typeA - typeB;
+      }
+      // Then by name within same type
+      return getBoatName(a).localeCompare(getBoatName(b));
+    };
 
-    return row;
+    clubBoats.sort(sortBoats);
+    raceBoats.sort(sortBoats);
+
+    return { clubBoats, raceBoats };
   }
 
   /**
-   * Render boat information cell
+   * Create a boat entry element (boat info on left, sessions stacked vertically on right)
    */
-  renderBoatInfo(boat) {
-    const icon = this.getBoatIcon(boat.type);
-    const weightInfo = boat.weight ? `⚖️ ${boat.weight} KG` : '';
-    const classification = boat.classification === 'R' ? 'Racer' : boat.classification === 'RT' ? 'RT' : 'Training';
+  createBoatEntry(boat) {
+    const entry = document.createElement('div');
+    entry.className = 'boat-entry';
 
-    return `
-      <div class="boat-info">
-        <div class="boat-header">
-          <span class="boat-icon">${icon}</span>
-          <span class="boat-name">${this.escapeHtml(boat.displayName)}</span>
-        </div>
-        ${boat.nickname ? `<div class="boat-nickname">${this.escapeHtml(boat.nickname)}</div>` : ''}
-        <div class="boat-specs">
-          <span class="boat-type-badge">${boat.type}</span>
-          ${weightInfo ? `<span class="boat-weight">${weightInfo}</span>` : ''}
-          <span class="boat-classification">${classification}</span>
-        </div>
-      </div>
+    // Use nickname if available, otherwise display name
+    const boatName = boat.nickname || boat.displayName;
+
+    // Boat info (type badge + name) on left - fixed width
+    const boatInfo = document.createElement('div');
+    boatInfo.className = 'boat-info';
+    boatInfo.innerHTML = `
+      <span class="boat-type-badge">${boat.type}</span>
+      <span class="boat-name-text" title="${this.escapeHtml(boatName)}">${this.escapeHtml(boatName)}</span>
     `;
+    entry.appendChild(boatInfo);
+
+    // Sessions (AM1 and AM2) stacked vertically on right
+    const sessions = document.createElement('div');
+    sessions.className = 'boat-sessions';
+
+    // AM1 session
+    const am1 = this.createSessionItem(boat, 'morning1', 'AM1');
+    sessions.appendChild(am1);
+
+    // AM2 session
+    const am2 = this.createSessionItem(boat, 'morning2', 'AM2');
+    sessions.appendChild(am2);
+
+    entry.appendChild(sessions);
+
+    return entry;
   }
 
   /**
-   * Render status for a specific day (both AM1 and AM2 sessions)
+   * Create a session item (AM1 or AM2)
    */
-  renderDayStatus(boat, dayOffset) {
-    const targetDate = new Date();
-    targetDate.setDate(targetDate.getDate() + dayOffset);
-    targetDate.setHours(0, 0, 0, 0);
+  createSessionItem(boat, sessionKey, sessionLabel) {
+    const item = document.createElement('div');
+    item.className = 'session-item';
 
-    const dateStr = this.formatDate(targetDate);
+    // Get booking for TODAY for this session
+    const booking = this.getTodayBooking(boat, sessionKey);
 
-    // Find bookings for this day
-    const dayBookings = boat.bookings.filter(b => b.date === dateStr);
-
-    if (dayBookings.length === 0) {
-      // Both sessions available
-      return `
-        <div class="session-status">
-          <span class="status-indicator available" title="AM1 Available"></span>
-          <span class="status-indicator available" title="AM2 Available"></span>
+    if (booking) {
+      // Show booking: start time + member name
+      item.innerHTML = `
+        <span class="session-label">${sessionLabel}:</span>
+        <div class="session-content">
+          <span class="booking-time">${booking.startTime}</span>
+          <span class="booking-member">${this.escapeHtml(booking.memberName)}</span>
+        </div>
+      `;
+    } else {
+      // Leave blank when available
+      item.innerHTML = `
+        <span class="session-label">${sessionLabel}:</span>
+        <div class="session-content">
         </div>
       `;
     }
 
-    // Check each session
-    const am1Booking = dayBookings.find(b => b.session === 'morning1');
-    const am2Booking = dayBookings.find(b => b.session === 'morning2');
-
-    const am1Status = am1Booking ? 'booked' : 'available';
-    const am2Status = am2Booking ? 'booked' : 'available';
-
-    const am1Member = am1Booking ? `<div class="member-name">${this.escapeHtml(am1Booking.memberName)}</div>` : '';
-    const am2Member = am2Booking ? `<div class="member-name">${this.escapeHtml(am2Booking.memberName)}</div>` : '';
-
-    return `
-      <div class="session-status">
-        <div>
-          <span class="status-indicator ${am1Status}" title="AM1 ${am1Status}"></span>
-          ${am1Member}
-        </div>
-        <div>
-          <span class="status-indicator ${am2Status}" title="AM2 ${am2Status}"></span>
-          ${am2Member}
-        </div>
-      </div>
-    `;
+    return item;
   }
 
   /**
-   * Render week summary (Mon-Fri) as dots
+   * Get booking for today for a specific session
    */
-  renderWeekSummary(boat) {
-    const dots = [];
-
-    // Days 2-6 (Mon-Fri if today is Sat)
-    for (let dayOffset = 2; dayOffset <= 6; dayOffset++) {
-      const targetDate = new Date();
-      targetDate.setDate(targetDate.getDate() + dayOffset);
-      targetDate.setHours(0, 0, 0, 0);
-      const dateStr = this.formatDate(targetDate);
-
-      const hasBooking = boat.bookings.some(b => b.date === dateStr);
-      const status = hasBooking ? 'booked' : 'available';
-
-      dots.push(`<span class="week-dot ${status}" title="${this.formatDayName(targetDate)}: ${status}"></span>`);
-    }
-
-    // Check if there are any bookings
-    const hasAnyBooking = boat.bookings.some(b => {
-      const bookingDate = new Date(b.date);
-      const today = new Date();
-      today.setDate(today.getDate() + 2); // Start from day 2
-      return bookingDate >= today;
-    });
-
-    const note = hasAnyBooking ? '<div class="week-note">Some bookings</div>' : '';
-
-    return `
-      <div class="week-summary">
-        ${dots.join('')}
-        ${note}
-      </div>
-    `;
-  }
-
-  /**
-   * Update date headers
-   */
-  updateDateHeaders() {
+  getTodayBooking(boat, sessionKey) {
     const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
+    today.setHours(0, 0, 0, 0);
+    const todayStr = this.formatDate(today);
 
-    // Today header
-    this.elements.todayDate.textContent = this.formatShortDate(today);
-
-    // Tomorrow header
-    this.elements.tomorrowDate.textContent = this.formatShortDate(tomorrow);
-
-    // Week dates (Mon-Fri)
-    const weekStart = new Date(today);
-    weekStart.setDate(weekStart.getDate() + 2);
-    const weekEnd = new Date(today);
-    weekEnd.setDate(weekEnd.getDate() + 6);
-    this.elements.weekDates.textContent = `${this.formatShortDate(weekStart)}-${this.formatShortDate(weekEnd)}`;
+    return boat.bookings.find(b =>
+      b.date === todayStr && b.session === sessionKey
+    );
   }
 
   /**
@@ -329,6 +259,14 @@ class TVDisplayController {
       year: 'numeric'
     }).toUpperCase();
     this.elements.currentDay.textContent = dayStr;
+
+    // Update footer date
+    const footerStr = 'TODAY - ' + now.toLocaleDateString('en-AU', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long'
+    });
+    this.elements.todayDateFooter.textContent = footerStr;
 
     // Update time
     const prevTime = this.elements.currentTime.textContent;
@@ -415,22 +353,6 @@ class TVDisplayController {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
-  }
-
-  /**
-   * Format date as "Sat 26"
-   */
-  formatShortDate(date) {
-    const day = date.toLocaleDateString('en-AU', { weekday: 'short' });
-    const dayNum = date.getDate();
-    return `${day} ${dayNum}`;
-  }
-
-  /**
-   * Format date as day name
-   */
-  formatDayName(date) {
-    return date.toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' });
   }
 
   /**

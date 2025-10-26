@@ -31,65 +31,31 @@
             <p class="retry-info">Retrying automatically...</p>
         </div>
 
-        <!-- Main Content: View 1 - Today's Bookings -->
+        <!-- Main Content: Two-Column All Boats View -->
         <main class="view-container hidden" id="mainView">
-            <h2 class="view-title">TODAY'S BOOKINGS</h2>
+            <div class="two-column-grid">
+                <!-- Left Column: Club Boats -->
+                <div class="boat-column">
+                    <h2 class="column-title">CLUB BOATS</h2>
+                    <div class="boats-list" id="clubBoatsList">
+                        <!-- Club boats will be inserted here -->
+                    </div>
+                </div>
 
-            <div class="no-bookings hidden" id="noBookings">
-                <div class="celebration-icon">🎉</div>
-                <h3>All Boats Available!</h3>
-                <p>No bookings for today or tomorrow</p>
+                <!-- Right Column: Race Boats -->
+                <div class="boat-column">
+                    <h2 class="column-title">RACE BOATS</h2>
+                    <div class="boats-list" id="raceBoatsList">
+                        <!-- Race boats will be inserted here -->
+                    </div>
+                </div>
             </div>
-
-            <table class="booking-grid" id="bookingGrid">
-                <thead>
-                    <tr>
-                        <th class="boat-column">BOAT</th>
-                        <th class="day-column">
-                            <div class="day-header">TODAY</div>
-                            <div class="date-label" id="todayDate">Sat 26</div>
-                            <div class="session-labels">
-                                <span>AM1</span>
-                                <span class="session-divider">|</span>
-                                <span>AM2</span>
-                            </div>
-                        </th>
-                        <th class="day-column">
-                            <div class="day-header">TOMORROW</div>
-                            <div class="date-label" id="tomorrowDate">Sun 27</div>
-                            <div class="session-labels">
-                                <span>AM1</span>
-                                <span class="session-divider">|</span>
-                                <span>AM2</span>
-                            </div>
-                        </th>
-                        <th class="week-column">
-                            <div class="day-header">REST OF WEEK</div>
-                            <div class="date-label" id="weekDates">Mon-Fri</div>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody id="bookingGridBody">
-                    <!-- Boat rows will be inserted here by JavaScript -->
-                </tbody>
-            </table>
         </main>
 
         <!-- Footer (always visible) -->
         <footer class="display-footer">
             <div class="view-info">
-                <span class="view-label">View 1: Today's Bookings</span>
-                <span class="view-note">Showing boats with bookings only</span>
-            </div>
-            <div class="legend">
-                <span class="legend-item">
-                    <span class="status-indicator available"></span>
-                    <span>Available</span>
-                </span>
-                <span class="legend-item">
-                    <span class="status-indicator booked"></span>
-                    <span>Booked</span>
-                </span>
+                <span class="view-label" id="todayDateFooter">TODAY - Saturday 26 October</span>
             </div>
             <div class="refresh-info">
                 <span id="lastUpdated">Last updated: --:--</span>

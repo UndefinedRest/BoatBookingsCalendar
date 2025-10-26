@@ -1,7 +1,7 @@
 /**
- * TV Display Styles for 55" Screen at 2m Viewing Distance
- * Optimized for 1920x1080 resolution
- * Font sizes: 60-96pt for readability from 2 meters
+ * TV Display Styles - Two Column Layout
+ * Optimized for 55" Screen at 2m Viewing Distance (1920x1080)
+ * Shows ALL boats split into Club (left) and Race (right) columns
  */
 
 /* ===== CSS Variables ===== */
@@ -10,10 +10,10 @@
   --bg-primary: #FFFFFF;
   --text-primary: #1e293b;
   --text-secondary: #64748b;
+  --text-light: #94a3b8;
 
   --status-available: #10b981;
   --status-booked: #dc2626;
-  --status-partial: #d97706;
 
   --border-light: #e2e8f0;
   --border-medium: #cbd5e1;
@@ -22,29 +22,27 @@
   --accent-blue: #0ea5e9;
   --accent-navy: #1e40af;
 
-  /* Typography - optimized for 2m viewing distance */
-  --font-mega: 96px;      /* Main header */
-  --font-huge: 72px;      /* Date/time */
-  --font-xlarge: 60px;    /* Boat names */
-  --font-large: 52px;     /* Section headers */
-  --font-medium: 48px;    /* Column headers */
-  --font-base: 40px;      /* Details, nicknames */
-  --font-small: 36px;     /* Cell text, member names */
-  --font-tiny: 32px;      /* Legend, footer */
+  /* Typography - optimized for compact layout */
+  --font-header: 64px;       /* Main header */
+  --font-time: 56px;         /* Time display */
+  --font-column-title: 32px; /* Column headers */
+  --font-boat-name: 22px;    /* Boat names */
+  --font-booking: 18px;      /* Booking details */
+  --font-footer: 20px;       /* Footer text */
 
   /* Spacing */
-  --gap-huge: 60px;
-  --gap-large: 40px;
-  --gap-medium: 24px;
-  --gap-small: 16px;
-  --gap-tiny: 8px;
+  --gap-large: 24px;
+  --gap-medium: 16px;
+  --gap-small: 8px;
+  --gap-tiny: 4px;
 
-  --margin-screen: 40px;
-  --padding-cell: 24px;
+  --margin-screen: 24px;
+  --padding-row: 6px;
 
   /* Layout */
-  --row-height: 160px;
-  --status-size: 80px;
+  --boat-row-height: 44px;  /* Each boat row with 2 stacked sessions */
+  --boat-name-width: 270px; /* Configurable width for boat name section */
+  --session-row-height: 22px; /* Each session row height */
 }
 
 /* ===== Reset & Base ===== */
@@ -58,7 +56,7 @@ body {
   font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
   background: var(--bg-primary);
   color: var(--text-primary);
-  overflow: hidden; /* No scrolling on TV display */
+  overflow: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -78,16 +76,16 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--gap-huge);
+  margin-bottom: var(--gap-large);
   padding-bottom: var(--gap-medium);
-  border-bottom: 6px solid var(--border-dark);
+  border-bottom: 4px solid var(--border-dark);
 }
 
 .display-header h1 {
-  font-size: var(--font-mega);
+  font-size: var(--font-header);
   font-weight: 700;
   color: var(--accent-navy);
-  letter-spacing: -2px;
+  letter-spacing: -1px;
 }
 
 .datetime {
@@ -95,21 +93,21 @@ body {
 }
 
 .datetime .day {
-  font-size: var(--font-medium);
+  font-size: 28px;
   font-weight: 600;
   color: var(--text-secondary);
   margin-bottom: var(--gap-tiny);
 }
 
 .datetime .time {
-  font-size: var(--font-huge);
+  font-size: var(--font-time);
   font-weight: 700;
   color: var(--accent-blue);
   font-variant-numeric: tabular-nums;
   letter-spacing: -1px;
 }
 
-/* ===== Loading Screen ===== */
+/* ===== Loading/Error Screens ===== */
 .loading-screen,
 .error-screen {
   flex: 1;
@@ -121,10 +119,10 @@ body {
 }
 
 .loading-spinner {
-  width: 120px;
-  height: 120px;
-  border: 12px solid var(--border-light);
-  border-top: 12px solid var(--accent-blue);
+  width: 80px;
+  height: 80px;
+  border: 8px solid var(--border-light);
+  border-top: 8px solid var(--accent-blue);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -136,7 +134,7 @@ body {
 
 .loading-screen p,
 .error-screen p {
-  font-size: var(--font-large);
+  font-size: 32px;
   color: var(--text-secondary);
 }
 
@@ -145,24 +143,12 @@ body {
 }
 
 .error-icon {
-  font-size: 120px;
+  font-size: 80px;
 }
 
 .error-screen h2 {
-  font-size: var(--font-huge);
+  font-size: 48px;
   font-weight: 700;
-  margin-bottom: var(--gap-small);
-}
-
-.error-message {
-  font-size: var(--font-base) !important;
-  color: var(--text-primary) !important;
-}
-
-.retry-info {
-  font-size: var(--font-small) !important;
-  color: var(--text-secondary) !important;
-  margin-top: var(--gap-medium);
 }
 
 /* ===== Main View Container ===== */
@@ -173,245 +159,144 @@ body {
   overflow: hidden;
 }
 
-.view-title {
-  font-size: var(--font-large);
+/* ===== Two Column Grid ===== */
+.two-column-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gap-large);
+  flex: 1;
+  overflow: hidden;
+}
+
+.boat-column {
+  display: flex;
+  flex-direction: column;
+  border: 3px solid var(--border-dark);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.column-title {
+  font-size: var(--font-column-title);
   font-weight: 700;
-  color: var(--accent-navy);
-  margin-bottom: var(--gap-large);
-  text-transform: uppercase;
+  text-align: center;
+  padding: var(--gap-medium);
+  background: var(--accent-navy);
+  color: white;
   letter-spacing: 1px;
 }
 
-/* ===== No Bookings State ===== */
-.no-bookings {
+.boats-list {
   flex: 1;
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+}
+
+.boats-list::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+/* ===== Boat Entry (Boat info left, sessions stacked right) ===== */
+.boat-entry {
+  height: var(--boat-row-height);
+  border-bottom: 1px solid var(--border-light);
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: var(--gap-medium);
+  align-items: stretch;
+  padding: 0;
+  transition: background-color 0.2s ease;
 }
 
-.celebration-icon {
-  font-size: 160px;
-  margin-bottom: var(--gap-medium);
-}
-
-.no-bookings h3 {
-  font-size: var(--font-huge);
-  font-weight: 700;
-  color: var(--status-available);
-}
-
-.no-bookings p {
-  font-size: var(--font-large);
-  color: var(--text-secondary);
-}
-
-/* ===== Booking Grid ===== */
-.booking-grid {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
-}
-
-.booking-grid thead th {
-  background: var(--accent-navy);
-  color: white;
-  font-weight: 700;
-  padding: var(--padding-cell);
-  border: 2px solid var(--border-dark);
-  vertical-align: top;
-}
-
-.booking-grid .boat-column {
-  width: 35%;
-  text-align: left;
-  font-size: var(--font-medium);
-}
-
-.booking-grid .day-column {
-  width: 22%;
-  text-align: center;
-  font-size: var(--font-medium);
-}
-
-.booking-grid .week-column {
-  width: 21%;
-  text-align: center;
-  font-size: var(--font-medium);
-}
-
-.day-header {
-  font-size: var(--font-medium);
-  margin-bottom: var(--gap-tiny);
-}
-
-.date-label {
-  font-size: var(--font-base);
-  font-weight: 400;
-  opacity: 0.9;
-  margin-bottom: var(--gap-small);
-}
-
-.session-labels {
-  font-size: var(--font-base);
-  font-weight: 400;
-  opacity: 0.85;
-  display: flex;
-  justify-content: center;
-  gap: var(--gap-small);
-}
-
-.session-divider {
-  opacity: 0.5;
-}
-
-/* ===== Boat Rows ===== */
-.booking-grid tbody tr {
-  border-bottom: 3px solid var(--border-medium);
-  transition: background-color 0.3s ease;
-}
-
-.booking-grid tbody tr:hover {
+.boat-entry:hover {
   background: #f8fafc;
 }
 
-.booking-grid tbody td {
-  padding: var(--padding-cell);
-  border-right: 2px solid var(--border-light);
-  vertical-align: middle;
-  height: var(--row-height);
+.boat-entry:last-child {
+  border-bottom: none;
 }
 
-.booking-grid tbody td:last-child {
-  border-right: none;
-}
-
-/* ===== Boat Info Cell ===== */
+/* Boat info section (left side - fixed width) */
 .boat-info {
-  display: flex;
-  flex-direction: column;
-  gap: var(--gap-tiny);
-}
-
-.boat-header {
   display: flex;
   align-items: center;
   gap: var(--gap-small);
-}
-
-.boat-icon {
-  font-size: var(--font-large);
+  width: var(--boat-name-width);
+  min-width: var(--boat-name-width);
+  max-width: var(--boat-name-width);
+  padding: 0 var(--gap-small);
   flex-shrink: 0;
-}
-
-.boat-name {
-  font-size: var(--font-xlarge);
-  font-weight: 700;
-  line-height: 1.1;
-  color: var(--text-primary);
-}
-
-.boat-nickname {
-  font-size: var(--font-base);
-  color: var(--text-secondary);
-  font-weight: 400;
-}
-
-.boat-specs {
-  font-size: var(--font-small);
-  color: var(--text-secondary);
-  font-weight: 400;
-  display: flex;
-  gap: var(--gap-small);
+  border-right: 2px solid var(--border-light);
 }
 
 .boat-type-badge {
   background: var(--accent-blue);
   color: white;
-  padding: 4px 12px;
-  border-radius: 8px;
-  font-size: var(--font-small);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 14px;
   font-weight: 600;
-}
-
-.boat-weight {
-  color: var(--text-secondary);
-}
-
-/* ===== Status Cells ===== */
-.status-cell {
-  text-align: center;
-}
-
-.session-status {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: var(--gap-medium);
-}
-
-.status-indicator {
-  width: var(--status-size);
-  height: var(--status-size);
-  border-radius: 50%;
-  display: inline-block;
   flex-shrink: 0;
 }
 
-.status-indicator.available {
-  background: var(--status-available);
-}
-
-.status-indicator.booked {
-  background: var(--status-booked);
-}
-
-.status-indicator.partial {
-  background: var(--status-partial);
-}
-
-.member-name {
-  font-size: var(--font-small);
+.boat-name-text {
+  font-size: var(--font-boat-name);
+  font-weight: 700;
+  line-height: 1.1;
   color: var(--text-primary);
-  font-weight: 500;
-  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+/* Sessions section (right side - stacked vertically) */
+.boat-sessions {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.session-item {
+  height: var(--session-row-height);
+  display: flex;
+  align-items: center;
+  gap: var(--gap-small);
+  padding: 0 var(--gap-small);
+  font-size: var(--font-booking);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.session-item:last-child {
+  border-bottom: none;
+}
+
+.session-label {
+  font-weight: 700;
+  color: var(--text-secondary);
+  min-width: 40px;
+}
+
+.session-content {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-small);
+}
+
+.booking-time {
+  font-weight: 700;
+  color: var(--status-booked);
+  font-variant-numeric: tabular-nums;
+}
+
+.booking-member {
+  color: var(--text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* ===== Week Summary Cell ===== */
-.week-summary {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: var(--gap-small);
-  flex-wrap: wrap;
-}
-
-.week-dot {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.week-dot.available {
-  background: var(--status-available);
-}
-
-.week-dot.booked {
-  background: var(--status-booked);
-}
-
-.week-note {
-  font-size: var(--font-small);
-  color: var(--text-secondary);
-  text-align: center;
-  width: 100%;
-  margin-top: var(--gap-tiny);
+.status-available-text {
+  color: var(--text-light);
+  font-style: italic;
 }
 
 /* ===== Footer ===== */
@@ -431,14 +316,9 @@ body {
 }
 
 .view-label {
-  font-size: var(--font-small);
+  font-size: var(--font-footer);
   font-weight: 600;
   color: var(--accent-navy);
-}
-
-.view-note {
-  font-size: var(--font-tiny);
-  color: var(--text-secondary);
 }
 
 .legend {
@@ -451,13 +331,23 @@ body {
   display: flex;
   align-items: center;
   gap: var(--gap-small);
-  font-size: var(--font-tiny);
+  font-size: var(--font-footer);
   font-weight: 500;
 }
 
 .legend-item .status-indicator {
-  width: 40px;
-  height: 40px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-indicator.available {
+  background: var(--status-available);
+}
+
+.status-indicator.booked {
+  background: var(--status-booked);
 }
 
 .refresh-info {
@@ -465,7 +355,7 @@ body {
   flex-direction: column;
   align-items: flex-end;
   gap: var(--gap-tiny);
-  font-size: var(--font-tiny);
+  font-size: 18px;
   color: var(--text-secondary);
 }
 
@@ -488,16 +378,6 @@ body {
   animation: fadeIn 0.5s ease-in-out;
 }
 
-/* Cell update flash */
-@keyframes flash {
-  0% { background: #fef3c7; }
-  100% { background: inherit; }
-}
-
-.cell-updated {
-  animation: flash 1s ease-out;
-}
-
 /* Time pulse on minute change */
 @keyframes timePulse {
   0%, 100% { opacity: 1; }
@@ -506,4 +386,14 @@ body {
 
 .time-changed {
   animation: timePulse 0.5s ease-in-out;
+}
+
+/* Cell update flash */
+@keyframes flash {
+  0% { background: #fef3c7; }
+  100% { background: inherit; }
+}
+
+.cell-updated {
+  animation: flash 1s ease-out;
 }
