@@ -68,7 +68,7 @@ pm2 restart lmrc-booking-viewer
 From any computer on the club network, open a web browser and go to:
 
 ```
-http://<pi-ip-address>:3000
+http://<pi-ip-address>:3001
 ```
 
 To find your Pi's IP address:
@@ -76,13 +76,13 @@ To find your Pi's IP address:
 hostname -I
 ```
 
-Example: `http://192.168.1.50:3000`
+Example: `http://192.168.1.50:3001`
 
 ### Create a Bookmark
 
 For easy access, create a bookmark on club computers with a friendly name:
 - **Name:** LMRC Booking Calendar
-- **URL:** http://192.168.1.50:3000 (use your actual Pi IP)
+- **URL:** http://192.168.1.50:3001 (use your actual Pi IP)
 
 ## Management Commands
 
@@ -133,8 +133,8 @@ pm2 restart lmrc-booking-viewer
 
 **Check Pi firewall:**
 ```bash
-# Allow port 3000
-sudo ufw allow 3000/tcp
+# Allow port 3001
+sudo ufw allow 3001/tcp
 ```
 
 **Verify app is running:**
@@ -145,7 +145,7 @@ pm2 logs lmrc-booking-viewer
 
 **Test from Pi itself:**
 ```bash
-curl http://localhost:3000
+curl http://localhost:3001
 ```
 
 ### Authentication errors?
@@ -225,7 +225,7 @@ If you have a local DNS server, add:
 bookings.lmrc.local → 192.168.1.50
 ```
 
-Then access via: `http://bookings.lmrc.local:3000`
+Then access via: `http://bookings.lmrc.local:3001`
 
 ## Security Notes
 
