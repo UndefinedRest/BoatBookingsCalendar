@@ -1,0 +1,424 @@
+/**
+ * Booking Calendar Styles
+ * Modern, responsive design
+ */
+
+/* CSS Variables for theming */
+:root {
+  --primary-color: #1e40af;
+  --secondary-color: #0ea5e9;
+  --background: #f8fafc;
+  --surface: #ffffff;
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
+  --border: #e2e8f0;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --session-1: #3b82f6;
+  --session-2: #8b5cf6;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  --font-mono: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+
+  --radius: 8px;
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+}
+
+/* Reset & Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--background);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--spacing-lg);
+}
+
+/* Header */
+.header {
+  background: var(--surface);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.club-name {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: var(--spacing-sm);
+}
+
+.header-info {
+  display: flex;
+  gap: var(--spacing-lg);
+  flex-wrap: wrap;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.date-range {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.last-updated {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+}
+
+/* Summary */
+.summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.summary-item {
+  background: var(--surface);
+  padding: var(--spacing-md);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.summary-label {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.summary-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+/* Calendar Table */
+.calendar-container {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  overflow-x: auto;
+  margin-bottom: var(--spacing-lg);
+}
+
+.calendar {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.calendar thead {
+  background: var(--primary-color);
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.calendar th {
+  padding: var(--spacing-md);
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid var(--primary-color);
+}
+
+.calendar th.boat-column {
+  min-width: 250px;
+  position: sticky;
+  left: 0;
+  background: var(--primary-color);
+  z-index: 11;
+}
+
+.calendar th.day-column {
+  min-width: 120px;
+  text-align: center;
+}
+
+.calendar tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background-color 0.2s;
+}
+
+.calendar tbody tr:hover {
+  background: var(--background);
+}
+
+.calendar tbody tr.group-separator {
+  border-top: 3px solid var(--primary-color);
+}
+
+.calendar td {
+  padding: var(--spacing-md);
+}
+
+.calendar td.boat-name {
+  font-weight: 500;
+  position: sticky;
+  left: 0;
+  background: var(--surface);
+  z-index: 5;
+}
+
+.calendar tbody tr:hover td.boat-name {
+  background: var(--background);
+}
+
+.calendar td.day-cell {
+  text-align: center;
+  vertical-align: top;
+  min-height: 60px;
+}
+
+/* Group Headers */
+.group-header {
+  background: var(--background) !important;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.05em;
+}
+
+.group-header td {
+  padding: var(--spacing-sm) var(--spacing-md);
+}
+
+/* Booking Cell */
+.booking {
+  background: var(--session-1);
+  color: white;
+  padding: var(--spacing-sm);
+  border-radius: calc(var(--radius) / 2);
+  margin-bottom: var(--spacing-xs);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.booking:last-child {
+  margin-bottom: 0;
+}
+
+.booking.session-2 {
+  background: var(--session-2);
+}
+
+.booking-time {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.booking-member {
+  opacity: 0.95;
+  font-size: 0.75rem;
+}
+
+/* Empty cell */
+.empty-cell {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  opacity: 0.5;
+}
+
+/* Legend */
+.legend {
+  background: var(--surface);
+  padding: var(--spacing-md);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.legend h3 {
+  font-size: 1rem;
+  margin-bottom: var(--spacing-sm);
+  color: var(--text-primary);
+}
+
+.legend-items {
+  display: flex;
+  gap: var(--spacing-lg);
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: 0.875rem;
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.legend-dot.session-1 {
+  background: var(--session-1);
+}
+
+.legend-dot.session-2 {
+  background: var(--session-2);
+}
+
+/* Loading State */
+.loading {
+  text-align: center;
+  padding: var(--spacing-xl);
+}
+
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--border);
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto var(--spacing-md);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Error State */
+.error {
+  text-align: center;
+  padding: var(--spacing-xl);
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+}
+
+.error-icon {
+  font-size: 3rem;
+  margin-bottom: var(--spacing-md);
+}
+
+.error h2 {
+  color: var(--error);
+  margin-bottom: var(--spacing-sm);
+}
+
+.error-message {
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-md);
+}
+
+.btn-retry {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-retry:hover {
+  background: var(--secondary-color);
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: var(--spacing-lg);
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+}
+
+.version {
+  margin-top: var(--spacing-sm);
+  opacity: 0.7;
+}
+
+/* Utility Classes */
+.hidden {
+  display: none !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: var(--spacing-md);
+  }
+
+  .club-name {
+    font-size: 1.5rem;
+  }
+
+  .header-info {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .summary {
+    grid-template-columns: 1fr;
+  }
+
+  .calendar {
+    font-size: 0.8125rem;
+  }
+
+  .calendar th,
+  .calendar td {
+    padding: var(--spacing-sm);
+  }
+
+  .calendar th.boat-column {
+    min-width: 200px;
+  }
+
+  .calendar th.day-column {
+    min-width: 100px;
+  }
+}
+
+/* Print Styles */
+@media print {
+  body {
+    background: white;
+  }
+
+  .header,
+  .calendar-container,
+  .legend {
+    box-shadow: none;
+  }
+
+  .summary,
+  .footer {
+    display: none;
+  }
+}

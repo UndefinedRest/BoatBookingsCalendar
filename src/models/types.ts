@@ -20,7 +20,7 @@ export interface Asset {
 }
 
 export interface RawBooking {
-  id?: string;
+  id?: string | number;
   title: string;
   start: string;
   end: string;

@@ -126,7 +126,7 @@ export class AuthService {
           'Referer': `${this.config.baseUrl}/login`,
           'Origin': this.config.baseUrl,
         },
-        validateStatus: (status) => true, // Accept all status codes
+        validateStatus: (_status) => true, // Accept all status codes
       });
 
       const cookieCount = this.cookieJar.getCookiesSync(this.config.baseUrl).length;

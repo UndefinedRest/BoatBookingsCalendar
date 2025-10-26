@@ -4,7 +4,6 @@
  */
 
 import { writeFile } from 'fs/promises';
-import { startOfWeek, endOfWeek, addDays } from 'date-fns';
 import { config } from './config/config.js';
 import { AuthService } from './client/auth.js';
 import { AssetService } from './services/assetService.js';
