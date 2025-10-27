@@ -1943,6 +1943,71 @@ sudo systemctl restart lmrc-booking.service
 
 ---
 
+## Unified Deployment with Club Noticeboard
+
+### Multi-Application Deployment Strategy
+
+The LMRC Boatshed Display System consists of two applications that can be deployed together on a single Raspberry Pi:
+
+1. **Boat Booking Viewer** (this project) - Real-time booking calendar
+2. **Club Noticeboard** (sibling project: `../Noticeboard`) - Digital signage with news, events, sponsors
+
+**Deployment Documentation**:
+- **[DEPLOYMENT_UNIFIED.md](DEPLOYMENT_UNIFIED.md)** - Complete architectural design (2000+ lines)
+- **[DEPLOYMENT_UNIFIED_SUMMARY.md](DEPLOYMENT_UNIFIED_SUMMARY.md)** - Executive summary
+
+### Recommended Architecture
+
+**PM2-Managed Multi-App with Configuration Launcher**
+
+```
+┌────────────────────────────────────────────┐
+│     Launcher App (Port 80)                 │
+│  - Web-based switching control             │
+│  - Shared config management                │
+│  - Reverse proxy to active app             │
+│  - PM2 lifecycle management                │
+└────────────────────────────────────────────┘
+          ↓                    ↓
+┌────────────────┐    ┌────────────────┐
+│ Booking Viewer │    │ Noticeboard    │
+│ Port 3001      │    │ Port 3002      │
+│ Active/Stopped │    │ Active/Stopped │
+└────────────────┘    └────────────────┘
+```
+
+### Key Benefits
+
+1. **Resource Efficiency**: Only active app runs and makes RevSport calls
+2. **Easy Switching**: Web UI or API to switch between apps
+3. **Shared Configuration**: Single config file for URLs, branding, credentials
+4. **Independent Maintenance**: Update either app without affecting the other
+5. **Graceful Management**: PM2 handles crashes, auto-restart, logging
+
+### Shared Configuration Items
+
+Items configured once, used by both apps:
+- RevSport base URL
+- Club name, tagline, branding colors
+- Logo path
+- RevSport credentials (booking viewer needs, noticeboard doesn't)
+- Timezone
+- Session times (booking viewer specific)
+- Weather location (noticeboard specific)
+
+**Location**: `/home/pi/lmrc-config/config.json`
+
+### Implementation Status
+
+**Current**: Each app runs standalone with independent configuration
+**Future**: Launcher application to manage both apps with shared config
+
+**Effort Estimate**: 16-24 hours development + testing
+
+See deployment documentation for complete implementation guide.
+
+---
+
 ## Appendix
 
 ### File Structure
