@@ -499,6 +499,78 @@ interface Asset {
 }
 ```
 
+**Field Extraction Logic:**
+
+The `type`, `classification`, and `weight` fields are **parsed from the boat's fullName** using regex patterns in the `parseBoatName()` method:
+
+**1. Type Extraction (Boat Type):**
+```typescript
+// Regex: /^(1X|2X|4X|8X)/
+const typeMatch = fullName.match(/^(1X|2X|4X|8X)/);
+const type: BoatType = typeMatch ? typeMatch[1] : 'Unknown';
+```
+
+- Matches `1X`, `2X`, `4X`, or `8X` at the **start** of the name
+- If no match → defaults to `'Unknown'`
+
+**Examples:**
+- `"1X - Carmody single scull ( Go For Gold )"` → **1X**
+- `"2X RACER - Swift double/pair 70 KG"` → **2X**
+- `"4X - Ausrowtec coxed quad/four 90 KG"` → **4X**
+- `"Tinnie - 15HP"` → **Unknown**
+
+**2. Classification Extraction (Boat Class):**
+```typescript
+// Search for keywords "RACER" or "RT" anywhere in name
+const racerMatch = fullName.match(/RACER/i);
+const rtMatch = fullName.match(/\bRT\b/i);
+const classification: BoatClassification = racerMatch ? 'R' : rtMatch ? 'RT' : 'T';
+```
+
+- If contains `"RACER"` (case-insensitive) → **R** (Racing boat)
+- Else if contains `"RT"` as whole word → **RT** (Racing/Training hybrid)
+- Else → **T** (Training boat, default)
+
+**Examples:**
+- `"2X RACER - Swift double/pair 70 KG"` → **R**
+- `"1X RT - Training scull"` → **RT**
+- `"1X - Carmody single scull"` → **T**
+
+**3. Weight Extraction (Weight Class in KG):**
+```typescript
+// Regex: /(\d+)\s*KG/i
+const weightMatch = fullName.match(/(\d+)\s*KG/i);
+const weight = weightMatch ? weightMatch[1] : null;
+```
+
+- Matches any digits followed by "KG" (case-insensitive)
+- Captures just the number
+- If no match → `null`
+
+**Examples:**
+- `"2X - Swift double/pair 70 KG (Ian Krix)"` → **"70"**
+- `"4X - Ausrowtec coxed quad 90 KG"` → **"90"**
+- `"1X - Carmody single scull"` → **null**
+
+**Complete Parsing Example:**
+
+```
+Input:  "2X RACER - Swift double/pair 70 KG (Ian Krix)"
+
+Output:
+  type:           "2X"                (matched at start)
+  classification: "R"                 (contains "RACER")
+  weight:         "70"                (matched "70 KG")
+  nickname:       "Ian Krix"          (text in parentheses)
+  displayName:    "Swift double/pair" (cleaned, metadata removed)
+```
+
+**Important Notes:**
+- All parsing is **client-side** from HTML scraped from `/bookings` page
+- Boat names follow consistent format in RevSport portal
+- No "Category" field exists - only type, classification, and weight
+- Parsing is reliable due to naming convention consistency
+
 **Critical Notes:**
 - Classification determines which column boat appears in:
   - `'R'` → Race Boats (right column)
