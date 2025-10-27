@@ -26,6 +26,11 @@ weekly-bookings.json
 weekly-bookings-summary.txt
 *.backup.*
 
+# Debug and investigation files
+*-page.html
+investigate-*.js
+*-investigation.md
+
 # Build output
 dist/
 *.tsbuildinfo
