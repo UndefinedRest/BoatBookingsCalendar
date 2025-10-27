@@ -22,6 +22,16 @@
   --accent-blue: #0ea5e9;
   --accent-navy: #1e40af;
 
+  /* Boat Type Background Colors - CONFIGURABLE for visual grouping */
+  --boat-type-1x-bg: #fef3c7;      /* Singles - subtle yellow */
+  --boat-type-2x-bg: #dbeafe;      /* Doubles - subtle blue */
+  --boat-type-4x-bg: #d1fae5;      /* Quads - subtle green */
+  --boat-type-other-bg: #f3f4f6;   /* Other boats - subtle gray */
+
+  /* Boat Type Group Separator */
+  --boat-type-separator-color: #64748b;  /* Dark separator line between groups */
+  --boat-type-separator-width: 2px;
+
   /* Typography - ADJUST THESE FOR READABILITY */
   --font-header: 64px;       /* Main header */
   --font-time: 56px;         /* Time display */
@@ -208,13 +218,32 @@ body {
   transition: background-color 0.2s ease;
 }
 
-/* Alternating row colors for easier reading */
-.boat-entry:nth-child(even) {
-  background: #f8fafc;
+/* Boat type background colors - CONFIGURABLE */
+.boat-entry.type-1x {
+  background: var(--boat-type-1x-bg);
+}
+
+.boat-entry.type-2x {
+  background: var(--boat-type-2x-bg);
+}
+
+.boat-entry.type-4x {
+  background: var(--boat-type-4x-bg);
+}
+
+.boat-entry.type-other {
+  background: var(--boat-type-other-bg);
+}
+
+/* Type group separator - darker line at top when boat type changes */
+.boat-entry.type-separator {
+  border-top: var(--boat-type-separator-width) solid var(--boat-type-separator-color);
+  padding-top: var(--gap-tiny);
+  margin-top: var(--gap-tiny);
 }
 
 .boat-entry:hover {
-  background: #e0f2fe;
+  filter: brightness(0.95);
 }
 
 .boat-entry:last-child {

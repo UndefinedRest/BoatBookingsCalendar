@@ -126,16 +126,20 @@ class TVDisplayController {
 
     // Render club boats (left column)
     this.elements.clubBoatsList.innerHTML = '';
+    let prevClubType = null;
     clubBoats.forEach(boat => {
-      const entry = this.createBoatEntry(boat);
+      const entry = this.createBoatEntry(boat, prevClubType);
       this.elements.clubBoatsList.appendChild(entry);
+      prevClubType = boat.type;
     });
 
     // Render race boats (right column)
     this.elements.raceBoatsList.innerHTML = '';
+    let prevRaceType = null;
     raceBoats.forEach(boat => {
-      const entry = this.createBoatEntry(boat);
+      const entry = this.createBoatEntry(boat, prevRaceType);
       this.elements.raceBoatsList.appendChild(entry);
+      prevRaceType = boat.type;
     });
   }
 
@@ -239,9 +243,18 @@ class TVDisplayController {
   /**
    * Create a boat entry element (boat info on left, multi-day grid on right)
    */
-  createBoatEntry(boat) {
+  createBoatEntry(boat, previousType = null) {
     const entry = document.createElement('div');
     entry.className = 'boat-entry';
+
+    // Add boat type background color class
+    const typeClass = this.getBoatTypeClass(boat.type);
+    entry.classList.add(typeClass);
+
+    // Add separator class if boat type changed from previous
+    if (previousType !== null && boat.type !== previousType) {
+      entry.classList.add('type-separator');
+    }
 
     // Use nickname if available, otherwise display name
     const boatName = boat.nickname || boat.displayName;
@@ -436,6 +449,19 @@ class TVDisplayController {
       case '8X':
       case '8+': return '🚣🚣🚣🚣🚣🚣🚣🚣';
       default: return '🚣';
+    }
+  }
+
+  /**
+   * Get CSS class for boat type background color
+   */
+  getBoatTypeClass(type) {
+    switch (type) {
+      case '1X': return 'type-1x';
+      case '2X': return 'type-2x';
+      case '4X': return 'type-4x';
+      case '8X': return 'type-other';
+      default: return 'type-other';
     }
   }
 
