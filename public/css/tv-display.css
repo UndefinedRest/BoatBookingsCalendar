@@ -41,12 +41,12 @@
 
   /* Layout - ADJUST THESE FOR SPACING */
   --boat-row-height: 60px;  /* Each boat row with 2 stacked sessions (CONFIGURABLE - increase to fill more vertical space) */
-  --boat-name-width: 270px; /* Width for boat name section */
-  --session-label-width: 60px; /* Width for session labels column (AM1/AM2) */
+  --boat-name-width: 300px; /* Width for boat name section (includes weight) */
   --session-row-height: 30px; /* Each session row height (CONFIGURABLE - increase for more spacing) */
 
   /* Multi-Day Display Configuration */
   --days-to-display: 5; /* CONFIGURABLE: Number of days to show (today + future days) */
+  --refresh-interval: 300000; /* CONFIGURABLE: Refresh interval in milliseconds (default: 5 minutes) */
 }
 
 /* ===== Reset & Base ===== */
@@ -169,7 +169,7 @@ body {
 /* ===== Day Headers ===== */
 .day-headers {
   display: grid;
-  grid-template-columns: var(--boat-name-width) var(--session-label-width) repeat(var(--days-to-display), 1fr);
+  grid-template-columns: var(--boat-name-width) repeat(var(--days-to-display), 1fr);
   border-bottom: 3px solid var(--border-dark);
   background: #f8fafc;
   position: sticky;
@@ -180,13 +180,6 @@ body {
 .day-header-spacer {
   padding: var(--gap-small);
   border-right: 2px solid var(--border-light);
-}
-
-.session-header-spacer {
-  width: var(--session-label-width);
-  padding: var(--gap-small);
-  border-right: 2px solid var(--border-light);
-  background: #e2e8f0;
 }
 
 .day-header {
@@ -215,8 +208,13 @@ body {
   transition: background-color 0.2s ease;
 }
 
-.boat-entry:hover {
+/* Alternating row colors for easier reading */
+.boat-entry:nth-child(even) {
   background: #f8fafc;
+}
+
+.boat-entry:hover {
+  background: #e0f2fe;
 }
 
 .boat-entry:last-child {
@@ -257,31 +255,15 @@ body {
   flex: 1;
 }
 
-/* Session labels column (middle - fixed width) */
-.session-labels {
-  display: flex;
-  flex-direction: column;
-  width: var(--session-label-width);
-  min-width: var(--session-label-width);
-  max-width: var(--session-label-width);
-  flex-shrink: 0;
-  border-right: 2px solid var(--border-light);
-  background: #f8fafc;
-}
-
-.session-label-item {
-  height: var(--session-row-height);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--font-booking);
-  font-weight: 700;
+.boat-weight {
+  font-size: 14px;
+  font-weight: 600;
   color: var(--text-secondary);
-  border-bottom: 1px solid var(--border-light);
-}
-
-.session-label-item:last-child {
-  border-bottom: none;
+  padding: 2px 6px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 /* Multi-day grid section (right side - horizontal day columns) */

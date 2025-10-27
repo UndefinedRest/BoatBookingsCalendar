@@ -5,7 +5,11 @@
 
 class TVDisplayController {
   constructor() {
-    this.refreshInterval = 600000; // 10 minutes
+    // Try to read refresh interval from CSS variable, default to 5 minutes
+    const root = document.documentElement;
+    const refreshIntervalStr = getComputedStyle(root).getPropertyValue('--refresh-interval').trim();
+    this.refreshInterval = refreshIntervalStr ? parseInt(refreshIntervalStr) : 300000; // 5 minutes default
+
     this.clockInterval = 1000; // 1 second
     this.retryDelay = 30000; // 30 seconds on error
 
@@ -25,6 +29,7 @@ class TVDisplayController {
     this.bookingData = null;
     this.config = null;
     this.daysToDisplay = 5; // Read from CSS variable or default to 5
+    this.refreshTimer = null; // Store timer reference for proper cleanup
   }
 
   /**
@@ -32,6 +37,7 @@ class TVDisplayController {
    */
   async init() {
     console.log('[TV Display] Initializing...');
+    console.log(`[TV Display] Refresh interval: ${this.refreshInterval / 1000}s`);
 
     // Start clock immediately
     this.updateClock();
@@ -40,8 +46,14 @@ class TVDisplayController {
     // Load initial data
     await this.loadData();
 
-    // Schedule periodic refresh
-    setInterval(() => this.loadData(), this.refreshInterval);
+    // Schedule periodic refresh - store reference
+    if (this.refreshTimer) {
+      clearInterval(this.refreshTimer);
+    }
+    this.refreshTimer = setInterval(() => {
+      console.log('[TV Display] Auto-refresh triggered');
+      this.loadData();
+    }, this.refreshInterval);
   }
 
   /**
@@ -157,11 +169,6 @@ class TVDisplayController {
     boatSpacer.className = 'day-header-spacer';
     headers.push(boatSpacer);
 
-    // Add spacer for session label column
-    const sessionSpacer = document.createElement('div');
-    sessionSpacer.className = 'session-header-spacer';
-    headers.push(sessionSpacer);
-
     // Add headers for each day
     const today = new Date();
     for (let i = 0; i < this.daysToDisplay; i++) {
@@ -230,7 +237,7 @@ class TVDisplayController {
   }
 
   /**
-   * Create a boat entry element (boat info on left, session labels in middle, multi-day grid on right)
+   * Create a boat entry element (boat info on left, multi-day grid on right)
    */
   createBoatEntry(boat) {
     const entry = document.createElement('div');
@@ -239,30 +246,22 @@ class TVDisplayController {
     // Use nickname if available, otherwise display name
     const boatName = boat.nickname || boat.displayName;
 
-    // Boat info (type badge + name) on left - fixed width
-    const boatInfo = document.createElement('div');
-    boatInfo.className = 'boat-info';
-    boatInfo.innerHTML = `
+    // Build boat info HTML with weight if available
+    let boatInfoHTML = `
       <span class="boat-type-badge">${boat.type}</span>
       <span class="boat-name-text" title="${this.escapeHtml(boatName)}">${this.escapeHtml(boatName)}</span>
     `;
+
+    // Add weight badge if weight is available
+    if (boat.weight && boat.weight !== 'null') {
+      boatInfoHTML += `<span class="boat-weight">${boat.weight}kg</span>`;
+    }
+
+    // Boat info (type badge + name + weight) on left - fixed width
+    const boatInfo = document.createElement('div');
+    boatInfo.className = 'boat-info';
+    boatInfo.innerHTML = boatInfoHTML;
     entry.appendChild(boatInfo);
-
-    // Session labels column (AM1, AM2) in middle - fixed width
-    const sessionLabels = document.createElement('div');
-    sessionLabels.className = 'session-labels';
-
-    const am1Label = document.createElement('div');
-    am1Label.className = 'session-label-item';
-    am1Label.textContent = 'AM1';
-    sessionLabels.appendChild(am1Label);
-
-    const am2Label = document.createElement('div');
-    am2Label.className = 'session-label-item';
-    am2Label.textContent = 'AM2';
-    sessionLabels.appendChild(am2Label);
-
-    entry.appendChild(sessionLabels);
 
     // Multi-day grid on right
     const daysGrid = document.createElement('div');
@@ -278,12 +277,15 @@ class TVDisplayController {
       const dayColumn = document.createElement('div');
       dayColumn.className = 'day-column';
 
+      // Get bookings for this day, checking for spanning bookings
+      const bookings = this.getBookingsForDate(boat, dateStr);
+
       // AM1 session for this day
-      const am1 = this.createSessionItem(boat, 'morning1', dateStr);
+      const am1 = this.createSessionItem(bookings.morning1);
       dayColumn.appendChild(am1);
 
       // AM2 session for this day
-      const am2 = this.createSessionItem(boat, 'morning2', dateStr);
+      const am2 = this.createSessionItem(bookings.morning2);
       dayColumn.appendChild(am2);
 
       daysGrid.appendChild(dayColumn);
@@ -295,14 +297,11 @@ class TVDisplayController {
   }
 
   /**
-   * Create a session item (AM1 or AM2) for a specific date - without label
+   * Create a session item - without label
    */
-  createSessionItem(boat, sessionKey, dateStr) {
+  createSessionItem(booking) {
     const item = document.createElement('div');
     item.className = 'session-item';
-
-    // Get booking for this date and session
-    const booking = this.getBookingForDate(boat, sessionKey, dateStr);
 
     if (booking) {
       // Show booking: start time + member name (no label)
@@ -319,12 +318,50 @@ class TVDisplayController {
   }
 
   /**
-   * Get booking for a specific date and session
+   * Get bookings for a specific date, handling spanning bookings
+   * Returns: { morning1: booking|null, morning2: booking|null }
    */
-  getBookingForDate(boat, sessionKey, dateStr) {
-    return boat.bookings.find(b =>
-      b.date === dateStr && b.session === sessionKey
-    );
+  getBookingsForDate(boat, dateStr) {
+    if (!this.config || !this.config.sessions) {
+      return { morning1: null, morning2: null };
+    }
+
+    const result = { morning1: null, morning2: null };
+
+    // Check all bookings for this date
+    boat.bookings.forEach(booking => {
+      if (booking.date !== dateStr) return;
+
+      // Parse booking times
+      const [bookingStartHour, bookingStartMin] = booking.startTime.split(':').map(Number);
+      const [bookingEndHour, bookingEndMin] = booking.endTime.split(':').map(Number);
+
+      // Parse session times
+      const [session1StartHour, session1StartMin] = this.config.sessions.morning1.start.split(':').map(Number);
+      const [session1EndHour, session1EndMin] = this.config.sessions.morning1.end.split(':').map(Number);
+      const [session2StartHour, session2StartMin] = this.config.sessions.morning2.start.split(':').map(Number);
+      const [session2EndHour, session2EndMin] = this.config.sessions.morning2.end.split(':').map(Number);
+
+      // Convert to minutes for easier comparison
+      const bookingStart = bookingStartHour * 60 + bookingStartMin;
+      const bookingEnd = bookingEndHour * 60 + bookingEndMin;
+      const session1Start = session1StartHour * 60 + session1StartMin;
+      const session1End = session1EndHour * 60 + session1EndMin;
+      const session2Start = session2StartHour * 60 + session2StartMin;
+      const session2End = session2EndHour * 60 + session2EndMin;
+
+      // Check if booking overlaps with session 1
+      if (bookingStart < session1End && bookingEnd > session1Start) {
+        result.morning1 = booking;
+      }
+
+      // Check if booking overlaps with session 2
+      if (bookingStart < session2End && bookingEnd > session2Start) {
+        result.morning2 = booking;
+      }
+    });
+
+    return result;
   }
 
   /**
