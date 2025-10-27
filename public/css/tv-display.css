@@ -23,10 +23,10 @@
   --accent-navy: #1e40af;
 
   /* Boat Type Background Colors - CONFIGURABLE for visual grouping */
-  --boat-type-1x-bg: #fef3c7;      /* Singles - subtle yellow */
-  --boat-type-2x-bg: #dbeafe;      /* Doubles - subtle blue */
-  --boat-type-4x-bg: #d1fae5;      /* Quads - subtle green */
-  --boat-type-other-bg: #f3f4f6;   /* Other boats - subtle gray */
+  --boat-type-1x-bg: #fffbeb;      /* Singles - very subtle yellow */
+  --boat-type-2x-bg: #eff6ff;      /* Doubles - very subtle blue */
+  --boat-type-4x-bg: #f0fdf4;      /* Quads - very subtle green */
+  --boat-type-other-bg: #fafafa;   /* Other boats - very subtle gray */
 
   /* Boat Type Group Separator */
   --boat-type-separator-color: #64748b;  /* Dark separator line between groups */
