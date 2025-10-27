@@ -22,12 +22,12 @@
   --accent-blue: #0ea5e9;
   --accent-navy: #1e40af;
 
-  /* Typography - optimized for compact layout */
+  /* Typography - ADJUST THESE FOR READABILITY */
   --font-header: 64px;       /* Main header */
   --font-time: 56px;         /* Time display */
   --font-column-title: 32px; /* Column headers */
-  --font-boat-name: 22px;    /* Boat names */
-  --font-booking: 18px;      /* Booking details */
+  --font-boat-name: 26px;    /* Boat names (CONFIGURABLE - increase for better readability) */
+  --font-booking: 22px;      /* Booking details (CONFIGURABLE - increase for better readability) */
   --font-footer: 20px;       /* Footer text */
 
   /* Spacing */
@@ -39,10 +39,10 @@
   --margin-screen: 24px;
   --padding-row: 6px;
 
-  /* Layout */
-  --boat-row-height: 44px;  /* Each boat row with 2 stacked sessions */
-  --boat-name-width: 270px; /* Configurable width for boat name section */
-  --session-row-height: 22px; /* Each session row height */
+  /* Layout - ADJUST THESE FOR SPACING */
+  --boat-row-height: 60px;  /* Each boat row with 2 stacked sessions (CONFIGURABLE - increase to fill more vertical space) */
+  --boat-name-width: 270px; /* Width for boat name section */
+  --session-row-height: 30px; /* Each session row height (CONFIGURABLE - increase for more spacing) */
 }
 
 /* ===== Reset & Base ===== */
