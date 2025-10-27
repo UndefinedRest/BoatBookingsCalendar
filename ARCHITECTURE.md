@@ -496,12 +496,13 @@ interface Asset {
   classification: string;  // 'T' (Training), 'R' (Race), 'RT'
   type: string;           // '1X', '2X', '4X', etc.
   weight: string | null;  // e.g., "65" (kg)
+  sweepCapable: boolean;  // true if boat can do both sculling and sweep
 }
 ```
 
 **Field Extraction Logic:**
 
-The `type`, `classification`, and `weight` fields are **parsed from the boat's fullName** using regex patterns in the `parseBoatName()` method:
+The `type`, `classification`, `weight`, and `sweepCapable` fields are **parsed from the boat's fullName** using regex patterns in the `parseBoatName()` method:
 
 **1. Type Extraction (Boat Type):**
 ```typescript
@@ -552,15 +553,34 @@ const weight = weightMatch ? weightMatch[1] : null;
 - `"4X - Ausrowtec coxed quad 90 KG"` → **"90"**
 - `"1X - Carmody single scull"` → **null**
 
+**4. Sweep Capability Detection:**
+```typescript
+// Regex: /^(1X|2X|4X|8X)(\/[\+\-])?/
+const typeMatch = fullName.match(/^(1X|2X|4X|8X)(\/[\+\-])?/);
+const sweepCapable = !!typeMatch && !!typeMatch[2]; // true if /+ or /- present
+```
+
+- Detects `/+` or `/-` after boat type to indicate sweep capability
+- `"X"` in type indicates sculling
+- `"/+"` or `"/-"` indicates boat can also be used for sweep rowing
+- Boats remain grouped by base type (2X and 2X/- appear together)
+- Visual indicator (badge) shows sweep-capable boats on TV display
+
+**Examples:**
+- `"2X RACER - Partridge 95 KG"` → **false** (sculling only)
+- `"2X/- RACER - Partridge 95 KG"` → **true** (sculling + sweep)
+- `"4X/- RACER - Sykes M24"` → **true** (sculling + sweep)
+
 **Complete Parsing Example:**
 
 ```
-Input:  "2X RACER - Swift double/pair 70 KG (Ian Krix)"
+Input:  "2X/- RACER - Swift double/pair 70 KG (Ian Krix)"
 
 Output:
-  type:           "2X"                (matched at start)
+  type:           "2X"                (matched base type)
   classification: "R"                 (contains "RACER")
   weight:         "70"                (matched "70 KG")
+  sweepCapable:   true                (has "/-" indicator)
   nickname:       "Ian Krix"          (text in parentheses)
   displayName:    "Swift double/pair" (cleaned, metadata removed)
 ```

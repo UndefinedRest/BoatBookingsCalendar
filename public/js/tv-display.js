@@ -418,7 +418,12 @@ class TVDisplayController {
       boatInfoHTML += `<span class="boat-weight">${boat.weight}kg</span>`;
     }
 
-    // Boat info (type badge + name + weight) on left - fixed width
+    // Add sweep badge if boat is sweep capable
+    if (boat.sweepCapable) {
+      boatInfoHTML += `<span class="boat-sweep-badge">+/-</span>`;
+    }
+
+    // Boat info (type badge + name + weight + sweep) on left - fixed width
     const boatInfo = document.createElement('div');
     boatInfo.className = 'boat-info';
     boatInfo.innerHTML = boatInfoHTML;

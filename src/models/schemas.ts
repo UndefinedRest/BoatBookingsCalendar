@@ -16,6 +16,7 @@ export const AssetSchema = z.object({
   type: BoatTypeSchema,
   classification: BoatClassificationSchema,
   weight: z.string().nullable(),
+  sweepCapable: z.boolean(),
   calendarUrl: z.string(),
   bookingUrl: z.string(),
 });

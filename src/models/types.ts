@@ -15,6 +15,7 @@ export interface Asset {
   type: BoatType;
   classification: BoatClassification;
   weight: string | null;
+  sweepCapable: boolean;
   calendarUrl: string;
   bookingUrl: string;
 }

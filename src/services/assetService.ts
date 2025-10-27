@@ -69,6 +69,7 @@ export class AssetService {
           type: details.type,
           classification: details.classification,
           weight: details.weight,
+          sweepCapable: details.sweepCapable,
           calendarUrl: calendarUrl,
           bookingUrl: `/bookings/${boatId}`,
         };
@@ -94,17 +95,21 @@ export class AssetService {
    * - "1X - Carmody single scull ( Go For Gold )"
    * - "2X RACER - Swift double/pair 70 KG (Ian Krix)"
    * - "4X - Ausrowtec coxed quad/four 90 KG Hunter"
+   * - "2X/- RACER - Partridge 95 KG" (sweep capable)
    */
   private parseBoatName(fullName: string): {
     type: BoatType;
     classification: BoatClassification;
     weight: string | null;
+    sweepCapable: boolean;
     nickname: string;
     displayName: string;
   } {
-    // Extract type
-    const typeMatch = fullName.match(/^(1X|2X|4X|8X)/);
+    // Extract type and sweep capability
+    // Matches: 1X, 2X, 4X, 8X with optional /+ or /-
+    const typeMatch = fullName.match(/^(1X|2X|4X|8X)(\/[\+\-])?/);
     const type: BoatType = typeMatch ? (typeMatch[1] as BoatType) : 'Unknown';
+    const sweepCapable = !!typeMatch && !!typeMatch[2]; // true if /+ or /- present
 
     // Extract classification
     const racerMatch = fullName.match(/RACER/i);
@@ -121,7 +126,7 @@ export class AssetService {
 
     // Clean up display name
     let displayName = fullName
-      .replace(/^(1X|2X|4X|8X)\s*(-\s*)?/i, '')
+      .replace(/^(1X|2X|4X|8X)(\/[\+\-])?\s*(-\s*)?/i, '') // Remove type and sweep indicator
       .replace(/\bRACER\b\s*-?\s*/i, '')
       .replace(/\b(RT|T)\b\s*-?\s*/i, '')
       .replace(/\d+\s*KG/i, '')
@@ -133,6 +138,7 @@ export class AssetService {
       type,
       classification,
       weight,
+      sweepCapable,
       nickname,
       displayName,
     };
