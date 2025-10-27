@@ -42,6 +42,7 @@
   /* Layout - ADJUST THESE FOR SPACING */
   --boat-row-height: 60px;  /* Each boat row with 2 stacked sessions (CONFIGURABLE - increase to fill more vertical space) */
   --boat-name-width: 270px; /* Width for boat name section */
+  --session-label-width: 60px; /* Width for session labels column (AM1/AM2) */
   --session-row-height: 30px; /* Each session row height (CONFIGURABLE - increase for more spacing) */
 
   /* Multi-Day Display Configuration */
@@ -168,7 +169,7 @@ body {
 /* ===== Day Headers ===== */
 .day-headers {
   display: grid;
-  grid-template-columns: var(--boat-name-width) repeat(var(--days-to-display), 1fr);
+  grid-template-columns: var(--boat-name-width) var(--session-label-width) repeat(var(--days-to-display), 1fr);
   border-bottom: 3px solid var(--border-dark);
   background: #f8fafc;
   position: sticky;
@@ -177,9 +178,15 @@ body {
 }
 
 .day-header-spacer {
-  width: var(--boat-name-width);
   padding: var(--gap-small);
   border-right: 2px solid var(--border-light);
+}
+
+.session-header-spacer {
+  width: var(--session-label-width);
+  padding: var(--gap-small);
+  border-right: 2px solid var(--border-light);
+  background: #e2e8f0;
 }
 
 .day-header {
@@ -250,6 +257,33 @@ body {
   flex: 1;
 }
 
+/* Session labels column (middle - fixed width) */
+.session-labels {
+  display: flex;
+  flex-direction: column;
+  width: var(--session-label-width);
+  min-width: var(--session-label-width);
+  max-width: var(--session-label-width);
+  flex-shrink: 0;
+  border-right: 2px solid var(--border-light);
+  background: #f8fafc;
+}
+
+.session-label-item {
+  height: var(--session-row-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-booking);
+  font-weight: 700;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.session-label-item:last-child {
+  border-bottom: none;
+}
+
 /* Multi-day grid section (right side - horizontal day columns) */
 .boat-days-grid {
   flex: 1;
@@ -279,18 +313,6 @@ body {
 
 .session-item:last-child {
   border-bottom: none;
-}
-
-.session-label {
-  font-weight: 700;
-  color: var(--text-secondary);
-  min-width: 40px;
-}
-
-.session-content {
-  display: flex;
-  align-items: center;
-  gap: var(--gap-small);
 }
 
 .booking-time {

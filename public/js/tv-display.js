@@ -153,9 +153,14 @@ class TVDisplayController {
     const headers = [];
 
     // Add spacer for boat name column
-    const spacer = document.createElement('div');
-    spacer.className = 'day-header-spacer';
-    headers.push(spacer);
+    const boatSpacer = document.createElement('div');
+    boatSpacer.className = 'day-header-spacer';
+    headers.push(boatSpacer);
+
+    // Add spacer for session label column
+    const sessionSpacer = document.createElement('div');
+    sessionSpacer.className = 'session-header-spacer';
+    headers.push(sessionSpacer);
 
     // Add headers for each day
     const today = new Date();
@@ -225,7 +230,7 @@ class TVDisplayController {
   }
 
   /**
-   * Create a boat entry element (boat info on left, multi-day grid on right)
+   * Create a boat entry element (boat info on left, session labels in middle, multi-day grid on right)
    */
   createBoatEntry(boat) {
     const entry = document.createElement('div');
@@ -243,6 +248,22 @@ class TVDisplayController {
     `;
     entry.appendChild(boatInfo);
 
+    // Session labels column (AM1, AM2) in middle - fixed width
+    const sessionLabels = document.createElement('div');
+    sessionLabels.className = 'session-labels';
+
+    const am1Label = document.createElement('div');
+    am1Label.className = 'session-label-item';
+    am1Label.textContent = 'AM1';
+    sessionLabels.appendChild(am1Label);
+
+    const am2Label = document.createElement('div');
+    am2Label.className = 'session-label-item';
+    am2Label.textContent = 'AM2';
+    sessionLabels.appendChild(am2Label);
+
+    entry.appendChild(sessionLabels);
+
     // Multi-day grid on right
     const daysGrid = document.createElement('div');
     daysGrid.className = 'boat-days-grid';
@@ -258,11 +279,11 @@ class TVDisplayController {
       dayColumn.className = 'day-column';
 
       // AM1 session for this day
-      const am1 = this.createSessionItem(boat, 'morning1', 'AM1', dateStr);
+      const am1 = this.createSessionItem(boat, 'morning1', dateStr);
       dayColumn.appendChild(am1);
 
       // AM2 session for this day
-      const am2 = this.createSessionItem(boat, 'morning2', 'AM2', dateStr);
+      const am2 = this.createSessionItem(boat, 'morning2', dateStr);
       dayColumn.appendChild(am2);
 
       daysGrid.appendChild(dayColumn);
@@ -274,9 +295,9 @@ class TVDisplayController {
   }
 
   /**
-   * Create a session item (AM1 or AM2) for a specific date
+   * Create a session item (AM1 or AM2) for a specific date - without label
    */
-  createSessionItem(boat, sessionKey, sessionLabel, dateStr) {
+  createSessionItem(boat, sessionKey, dateStr) {
     const item = document.createElement('div');
     item.className = 'session-item';
 
@@ -284,21 +305,14 @@ class TVDisplayController {
     const booking = this.getBookingForDate(boat, sessionKey, dateStr);
 
     if (booking) {
-      // Show booking: start time + member name
+      // Show booking: start time + member name (no label)
       item.innerHTML = `
-        <span class="session-label">${sessionLabel}:</span>
-        <div class="session-content">
-          <span class="booking-time">${booking.startTime}</span>
-          <span class="booking-member">${this.escapeHtml(booking.memberName)}</span>
-        </div>
+        <span class="booking-time">${booking.startTime}</span>
+        <span class="booking-member">${this.escapeHtml(booking.memberName)}</span>
       `;
     } else {
       // Leave blank when available
-      item.innerHTML = `
-        <span class="session-label">${sessionLabel}:</span>
-        <div class="session-content">
-        </div>
-      `;
+      item.innerHTML = '';
     }
 
     return item;
