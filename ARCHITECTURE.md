@@ -560,16 +560,33 @@ const typeMatch = fullName.match(/^(1X|2X|4X|8X)(\/[\+\-])?/);
 const sweepCapable = !!typeMatch && !!typeMatch[2]; // true if /+ or /- present
 ```
 
-- Detects `/+` or `/-` after boat type to indicate sweep capability
-- `"X"` in type indicates sculling
-- `"/+"` or `"/-"` indicates boat can also be used for sweep rowing
-- Boats remain grouped by base type (2X and 2X/- appear together)
-- Visual indicator (badge) shows sweep-capable boats on TV display
+**Understanding Sweep Indicators:**
+- `"X"` in type = sculling (each rower has two oars)
+- `"/+"` = boat can ALSO be used for coxed sweep (one oar per rower, with coxswain)
+- `"/-"` = boat can ALSO be used for coxless sweep (one oar per rower, no coxswain)
+- **Important**: `+` and `-` are mutually exclusive - a boat is configured for one or the other
+- Detection treats both `/+` and `/-` as `sweepCapable: true`
+
+**Grouping Behavior:**
+- Boats remain grouped by base type (2X and 2X/- appear in same group)
+- Visual sorting: sculling-only first, then sweep-capable within each type group
+- Maintains familiar noticeboard layout while highlighting dual-capability boats
+
+**Visual Indicator Design:**
+- **"SWEEP"** badge in amber/orange (#f59e0b)
+- Positioned **below** weight badge (vertical stack)
+- Smaller font (11px) than weight badge (14px)
+- Rationale: Generic "SWEEP" avoids confusion (can't show both + and -)
+
+**Why Not "+/-"?**
+- Initially used "+/-" but this is misleading
+- Implies boat can be both coxed AND coxless, which is impossible
+- "SWEEP" is unambiguous: boat capable of sweep rowing (regardless of cox configuration)
 
 **Examples:**
 - `"2X RACER - Partridge 95 KG"` → **false** (sculling only)
-- `"2X/- RACER - Partridge 95 KG"` → **true** (sculling + sweep)
-- `"4X/- RACER - Sykes M24"` → **true** (sculling + sweep)
+- `"2X/- RACER - Partridge 95 KG"` → **true** (sculling + coxless sweep)
+- `"4X/+ RACER - Sykes M24"` → **true** (sculling + coxed sweep)
 
 **Complete Parsing Example:**
 
@@ -838,6 +855,35 @@ root.style.setProperty('--boat-type-1x-bg', config.colors.boatTypes.singles);
 │             │ Mike P │        │        │        │        │
 └─────────────┴────────┴────────┴────────┴────────┴────────┘
 ```
+
+**Boat Info Display:**
+```
+┌──────────────────────────────────┐
+│ [2X] Boat Name         [70kg]    │
+│                        [SWEEP]   │
+└──────────────────────────────────┘
+```
+
+**Layout Structure:**
+- Type badge (left): Blue badge with boat type (1X, 2X, 4X, 8X)
+- Boat name (center): Expands to fill available space, truncates with ellipsis
+- Badges (right): Vertical stack of weight + sweep badges
+  - Weight badge: Gray background, 14px font (if weight available)
+  - Sweep badge: Amber/orange background, 11px font (if sweep-capable)
+
+**Sweep Badge Display Logic:**
+```javascript
+// Only shows for boats with sweepCapable: true
+if (boat.sweepCapable) {
+  boatInfoHTML += `<span class="boat-sweep-badge">SWEEP</span>`;
+}
+```
+
+**Design Rationale:**
+- Vertical stacking: Weight above sweep maintains visual hierarchy
+- Amber color: Visually distinct from weight (gray) and type (blue)
+- Smaller font: Secondary information, shouldn't dominate display
+- Generic "SWEEP" text: Avoids confusion about cox configuration
 
 **Session Row Logic:**
 - Each day has 2 session rows (AM1 and AM2)

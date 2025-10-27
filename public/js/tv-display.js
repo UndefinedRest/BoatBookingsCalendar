@@ -407,20 +407,27 @@ class TVDisplayController {
     // Use nickname if available, otherwise display name
     const boatName = boat.nickname || boat.displayName;
 
-    // Build boat info HTML with weight if available
+    // Build boat info HTML
     let boatInfoHTML = `
       <span class="boat-type-badge">${boat.type}</span>
       <span class="boat-name-text" title="${this.escapeHtml(boatName)}">${this.escapeHtml(boatName)}</span>
     `;
 
-    // Add weight badge if weight is available
-    if (boat.weight && boat.weight !== 'null') {
-      boatInfoHTML += `<span class="boat-weight">${boat.weight}kg</span>`;
-    }
+    // Add badges (weight and sweep) in vertical container if either exists
+    if ((boat.weight && boat.weight !== 'null') || boat.sweepCapable) {
+      boatInfoHTML += `<div class="boat-badges-vertical">`;
 
-    // Add sweep badge if boat is sweep capable
-    if (boat.sweepCapable) {
-      boatInfoHTML += `<span class="boat-sweep-badge">+/-</span>`;
+      // Add weight badge if weight is available
+      if (boat.weight && boat.weight !== 'null') {
+        boatInfoHTML += `<span class="boat-weight">${boat.weight}kg</span>`;
+      }
+
+      // Add sweep badge if boat is sweep capable (below weight)
+      if (boat.sweepCapable) {
+        boatInfoHTML += `<span class="boat-sweep-badge">SWEEP</span>`;
+      }
+
+      boatInfoHTML += `</div>`;
     }
 
     // Boat info (type badge + name + weight + sweep) on left - fixed width

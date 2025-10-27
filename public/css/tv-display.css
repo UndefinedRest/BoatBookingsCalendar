@@ -293,6 +293,15 @@ body {
   flex: 1;
 }
 
+/* Vertical container for weight and sweep badges */
+.boat-badges-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+
 .boat-weight {
   font-size: 14px;
   font-weight: 600;
@@ -300,20 +309,18 @@ body {
   padding: 2px 6px;
   background: #e2e8f0;
   border-radius: 4px;
-  flex-shrink: 0;
   white-space: nowrap;
 }
 
 .boat-sweep-badge {
-  font-size: 13px;
+  font-size: 11px; /* Smaller font as requested */
   font-weight: 600;
   color: white;
-  padding: 2px 6px;
+  padding: 2px 5px;
   background: #f59e0b; /* Amber/orange to indicate dual capability */
-  border-radius: 4px;
-  flex-shrink: 0;
+  border-radius: 3px;
   white-space: nowrap;
-  margin-left: 4px;
+  text-transform: uppercase;
 }
 
 /* Multi-day grid section (right side - horizontal day columns) */
