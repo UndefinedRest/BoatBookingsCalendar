@@ -35,6 +35,10 @@ export const TVDisplayConfigSchema = z.object({
     rightTitle: z.string().max(50).default('RACE BOATS'),
   }),
 
+  display: z.object({
+    memberNameFormat: z.enum(['full', 'first-only', 'first-last-initial']).default('full'),
+  }),
+
   colors: z.object({
     boatTypes: z.object({
       singles: ColorSchema.default('#fffbeb'),
@@ -86,6 +90,10 @@ export const DEFAULT_TV_DISPLAY_CONFIG: TVDisplayConfig = {
   columns: {
     leftTitle: 'CLUB BOATS',
     rightTitle: 'RACE BOATS',
+  },
+
+  display: {
+    memberNameFormat: 'full',
   },
 
   colors: {

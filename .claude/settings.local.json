@@ -16,7 +16,21 @@
       "Bash(npm run dev:*)",
       "Bash(npm run fetch:*)",
       "Bash(cat:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nImplement production-ready TypeScript booking viewer\n\nComplete rewrite of the LMRC booking system with modern TypeScript implementation:\n\n- Migrated authentication from JavaScript to TypeScript (src/client/auth.ts)\n- Implemented parallel booking API calls with date range parameters\n- Created modular service architecture (assetService, bookingService)\n- Added Zod schema validation for runtime type safety\n- Comprehensive error handling and 500 status workaround\n- Performance: 2 seconds total, 7ms average per boat (42 boats)\n- All boats visible even with no bookings (critical requirement)\n\nRemoved obsolete prototype code:\n- auth/revsport-auth.js → migrated to src/client/auth.ts\n- scraper/ directory → replaced with TypeScript services\n- All test/debug scripts and HTML files\n- Old output files and backups\n\nUpdated documentation:\n- Complete README with usage, API reference, troubleshooting\n- Investigation findings with final results and performance metrics\n- Updated .gitignore for output files and build artifacts\n- Updated VSCode launch configuration for TypeScript\n\nValidated with successful test run showing 2 bookings for boat 8584.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git push:*)",
+      "Bash(npm run build:frontend:*)",
+      "Bash(npm run type-check:*)",
+      "Bash(curl:*)",
+      "Bash(python3:*)",
+      "Bash(npm run dev:server:*)",
+      "Bash(git commit:*)",
+      "Bash(npx tsx:*)",
+      "Bash(netstat:*)",
+      "Bash(taskkill:*)",
+      "Bash(git rm:*)",
+      "Bash(npm run build:*)",
+      "Bash(timeout /t 3)"
     ],
     "deny": [],
     "ask": []

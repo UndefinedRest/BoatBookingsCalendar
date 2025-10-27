@@ -465,10 +465,13 @@ class TVDisplayController {
     item.className = 'session-item';
 
     if (booking) {
+      // Format member name based on configuration
+      const formattedName = this.formatMemberName(booking.memberName);
+
       // Show booking: start time + member name (no label)
       item.innerHTML = `
         <span class="booking-time">${booking.startTime}</span>
-        <span class="booking-member">${this.escapeHtml(booking.memberName)}</span>
+        <span class="booking-member">${this.escapeHtml(formattedName)}</span>
       `;
     } else {
       // Leave blank when available
@@ -476,6 +479,40 @@ class TVDisplayController {
     }
 
     return item;
+  }
+
+  /**
+   * Format member name based on configuration
+   */
+  formatMemberName(fullName) {
+    if (!this.tvDisplayConfig || !this.tvDisplayConfig.display) {
+      return fullName; // Fallback to full name
+    }
+
+    const format = this.tvDisplayConfig.display.memberNameFormat;
+
+    switch (format) {
+      case 'first-only': {
+        // Return only first name (before first space)
+        const parts = fullName.trim().split(/\s+/);
+        return parts[0];
+      }
+
+      case 'first-last-initial': {
+        // Return first name + last initial (e.g., "John D")
+        const parts = fullName.trim().split(/\s+/);
+        if (parts.length === 1) {
+          return parts[0]; // Only one name part
+        }
+        const firstName = parts[0];
+        const lastInitial = parts[parts.length - 1].charAt(0).toUpperCase();
+        return `${firstName} ${lastInitial}`;
+      }
+
+      case 'full':
+      default:
+        return fullName;
+    }
   }
 
   /**

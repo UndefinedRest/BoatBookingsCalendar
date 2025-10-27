@@ -157,6 +157,11 @@ class ConfigController {
     document.getElementById('leftTitle').value = config.columns.leftTitle;
     document.getElementById('rightTitle').value = config.columns.rightTitle;
 
+    // Display options
+    if (config.display && config.display.memberNameFormat) {
+      document.getElementById('memberNameFormat').value = config.display.memberNameFormat;
+    }
+
     // Colors - Boat Types
     this.setColorValue('colorSingles', config.colors.boatTypes.singles);
     this.setColorValue('colorDoubles', config.colors.boatTypes.doubles);
@@ -222,6 +227,10 @@ class ConfigController {
       columns: {
         leftTitle: document.getElementById('leftTitle').value.trim(),
         rightTitle: document.getElementById('rightTitle').value.trim(),
+      },
+
+      display: {
+        memberNameFormat: document.getElementById('memberNameFormat').value,
       },
 
       colors: {

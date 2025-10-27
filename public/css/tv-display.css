@@ -339,6 +339,8 @@ body {
   font-weight: 700;
   color: var(--booking-time-color, var(--status-booked));
   font-variant-numeric: tabular-nums;
+  flex-shrink: 0; /* Prevent time from shrinking */
+  font-size: calc(var(--font-booking) * 0.9); /* Slightly smaller than member name */
 }
 
 .booking-member {
@@ -346,6 +348,8 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  flex: 1; /* Allow to grow and shrink */
+  min-width: 0; /* Critical for ellipsis to work in flexbox */
 }
 
 .status-available-text {
