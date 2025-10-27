@@ -218,21 +218,13 @@ body {
   transition: background-color 0.2s ease;
 }
 
-/* Boat type background colors - CONFIGURABLE */
-.boat-entry.type-1x {
-  background: var(--boat-type-1x-bg);
+/* Alternating row colors for booking data columns */
+.boat-entry:nth-child(even) {
+  background: #fafafa;
 }
 
-.boat-entry.type-2x {
-  background: var(--boat-type-2x-bg);
-}
-
-.boat-entry.type-4x {
-  background: var(--boat-type-4x-bg);
-}
-
-.boat-entry.type-other {
-  background: var(--boat-type-other-bg);
+.boat-entry:nth-child(odd) {
+  background: #ffffff;
 }
 
 /* Type group separator - darker line at top when boat type changes */
@@ -261,6 +253,23 @@ body {
   padding: 0 var(--gap-small);
   flex-shrink: 0;
   border-right: 2px solid var(--border-light);
+}
+
+/* Boat type background colors - CONFIGURABLE (only in boat info column) */
+.boat-entry.type-1x .boat-info {
+  background: var(--boat-type-1x-bg);
+}
+
+.boat-entry.type-2x .boat-info {
+  background: var(--boat-type-2x-bg);
+}
+
+.boat-entry.type-4x .boat-info {
+  background: var(--boat-type-4x-bg);
+}
+
+.boat-entry.type-other .boat-info {
+  background: var(--boat-type-other-bg);
 }
 
 .boat-type-badge {
