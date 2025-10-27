@@ -322,11 +322,12 @@ class TVDisplayController {
    * Returns: { morning1: booking|null, morning2: booking|null }
    */
   getBookingsForDate(boat, dateStr) {
-    if (!this.config || !this.config.sessions) {
+    if (!this.config || !this.config.club || !this.config.club.sessions) {
       return { morning1: null, morning2: null };
     }
 
     const result = { morning1: null, morning2: null };
+    const sessions = this.config.club.sessions;
 
     // Check all bookings for this date
     boat.bookings.forEach(booking => {
@@ -337,10 +338,10 @@ class TVDisplayController {
       const [bookingEndHour, bookingEndMin] = booking.endTime.split(':').map(Number);
 
       // Parse session times
-      const [session1StartHour, session1StartMin] = this.config.sessions.morning1.start.split(':').map(Number);
-      const [session1EndHour, session1EndMin] = this.config.sessions.morning1.end.split(':').map(Number);
-      const [session2StartHour, session2StartMin] = this.config.sessions.morning2.start.split(':').map(Number);
-      const [session2EndHour, session2EndMin] = this.config.sessions.morning2.end.split(':').map(Number);
+      const [session1StartHour, session1StartMin] = sessions.morning1.start.split(':').map(Number);
+      const [session1EndHour, session1EndMin] = sessions.morning1.end.split(':').map(Number);
+      const [session2StartHour, session2StartMin] = sessions.morning2.start.split(':').map(Number);
+      const [session2EndHour, session2EndMin] = sessions.morning2.end.split(':').map(Number);
 
       // Convert to minutes for easier comparison
       const bookingStart = bookingStartHour * 60 + bookingStartMin;

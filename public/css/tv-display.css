@@ -41,7 +41,7 @@
 
   /* Layout - ADJUST THESE FOR SPACING */
   --boat-row-height: 60px;  /* Each boat row with 2 stacked sessions (CONFIGURABLE - increase to fill more vertical space) */
-  --boat-name-width: 300px; /* Width for boat name section (includes weight) */
+  --boat-name-width: 360px; /* Width for boat name section (includes type badge + name + weight badge) */
   --session-row-height: 30px; /* Each session row height (CONFIGURABLE - increase for more spacing) */
 
   /* Multi-Day Display Configuration */
