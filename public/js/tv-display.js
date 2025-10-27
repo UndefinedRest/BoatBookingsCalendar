@@ -16,8 +16,6 @@ class TVDisplayController {
       mainView: document.getElementById('mainView'),
       clubBoatsList: document.getElementById('clubBoatsList'),
       raceBoatsList: document.getElementById('raceBoatsList'),
-      currentDay: document.getElementById('currentDay'),
-      currentTime: document.getElementById('currentTime'),
       todayDateFooter: document.getElementById('todayDateFooter'),
       lastUpdated: document.getElementById('lastUpdated'),
     };
@@ -246,19 +244,10 @@ class TVDisplayController {
   }
 
   /**
-   * Update the clock display
+   * Update the footer date display
    */
   updateClock() {
     const now = new Date();
-
-    // Update day
-    const dayStr = now.toLocaleDateString('en-AU', {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    }).toUpperCase();
-    this.elements.currentDay.textContent = dayStr;
 
     // Update footer date
     const footerStr = 'TODAY - ' + now.toLocaleDateString('en-AU', {
@@ -267,23 +256,6 @@ class TVDisplayController {
       month: 'long'
     });
     this.elements.todayDateFooter.textContent = footerStr;
-
-    // Update time
-    const prevTime = this.elements.currentTime.textContent;
-    const timeStr = now.toLocaleTimeString('en-AU', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false
-    });
-    this.elements.currentTime.textContent = timeStr;
-
-    // Pulse animation on minute change
-    if (prevTime !== '--:--' && prevTime !== timeStr) {
-      this.elements.currentTime.classList.add('time-changed');
-      setTimeout(() => {
-        this.elements.currentTime.classList.remove('time-changed');
-      }, 500);
-    }
   }
 
   /**
