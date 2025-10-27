@@ -34,3 +34,6 @@ investigate-*.js
 # Build output
 dist/
 *.tsbuildinfo
+
+# Local configuration (per-device settings)
+config/tv-display.json

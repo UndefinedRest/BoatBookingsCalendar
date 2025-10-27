@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TV Display Configuration</title>
+    <link rel="stylesheet" href="/css/config.css">
+</head>
+<body>
+    <div class="config-container">
+        <!-- Header -->
+        <header class="config-header">
+            <h1>TV Display Configuration</h1>
+            <p class="subtitle">Configure your boat booking TV display</p>
+        </header>
+
+        <!-- Status Message -->
+        <div class="status-message hidden" id="statusMessage"></div>
+
+        <!-- Configuration Form -->
+        <form id="configForm" class="config-form">
+
+            <!-- Layout Settings -->
+            <section class="config-section">
+                <h2>Layout Settings</h2>
+
+                <div class="form-group">
+                    <label for="daysToDisplay">
+                        Days to Display
+                        <span class="help-text">Number of days to show (including today)</span>
+                    </label>
+                    <div class="input-with-slider">
+                        <input type="range" id="daysToDisplay" name="daysToDisplay" min="1" max="7" step="1">
+                        <input type="number" id="daysToDisplayValue" min="1" max="7" step="1">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="boatRowHeight">
+                        Boat Row Height (px)
+                        <span class="help-text">Height of each boat row</span>
+                    </label>
+                    <div class="input-with-slider">
+                        <input type="range" id="boatRowHeight" name="boatRowHeight" min="40" max="120" step="5">
+                        <input type="number" id="boatRowHeightValue" min="40" max="120" step="5">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="sessionRowHeight">
+                        Session Row Height (px)
+                        <span class="help-text">Height of each session within a boat row</span>
+                    </label>
+                    <div class="input-with-slider">
+                        <input type="range" id="sessionRowHeight" name="sessionRowHeight" min="20" max="60" step="5">
+                        <input type="number" id="sessionRowHeightValue" min="20" max="60" step="5">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="boatNameWidth">
+                        Boat Name Column Width (px)
+                        <span class="help-text">Width of the boat name column</span>
+                    </label>
+                    <div class="input-with-slider">
+                        <input type="range" id="boatNameWidth" name="boatNameWidth" min="250" max="500" step="10">
+                        <input type="number" id="boatNameWidthValue" min="250" max="500" step="10">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Typography Settings -->
+            <section class="config-section">
+                <h2>Typography</h2>
+
+                <div class="form-group">
+                    <label for="boatNameSize">
+                        Boat Name Font Size (px)
+                        <span class="help-text">Font size for boat names</span>
+                    </label>
+                    <div class="input-with-slider">
+                        <input type="range" id="boatNameSize" name="boatNameSize" min="16" max="40" step="2">
+                        <input type="number" id="boatNameSizeValue" min="16" max="40" step="2">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="bookingDetailsSize">
+                        Booking Details Font Size (px)
+                        <span class="help-text">Font size for booking times and member names</span>
+                    </label>
+                    <div class="input-with-slider">
+                        <input type="range" id="bookingDetailsSize" name="bookingDetailsSize" min="14" max="32" step="2">
+                        <input type="number" id="bookingDetailsSizeValue" min="14" max="32" step="2">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="columnTitleSize">
+                        Column Title Font Size (px)
+                        <span class="help-text">Font size for column headers</span>
+                    </label>
+                    <div class="input-with-slider">
+                        <input type="range" id="columnTitleSize" name="columnTitleSize" min="20" max="48" step="2">
+                        <input type="number" id="columnTitleSizeValue" min="20" max="48" step="2">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Column Titles -->
+            <section class="config-section">
+                <h2>Column Titles</h2>
+
+                <div class="form-group">
+                    <label for="leftTitle">
+                        Left Column Title
+                        <span class="help-text">Title for the left column</span>
+                    </label>
+                    <input type="text" id="leftTitle" name="leftTitle" maxlength="50" placeholder="CLUB BOATS">
+                </div>
+
+                <div class="form-group">
+                    <label for="rightTitle">
+                        Right Column Title
+                        <span class="help-text">Title for the right column</span>
+                    </label>
+                    <input type="text" id="rightTitle" name="rightTitle" maxlength="50" placeholder="RACE BOATS">
+                </div>
+            </section>
+
+            <!-- Color Settings -->
+            <section class="config-section">
+                <h2>Boat Type Colors</h2>
+                <p class="section-description">Background colors for boat name column (by boat type)</p>
+
+                <div class="color-grid">
+                    <div class="form-group">
+                        <label for="colorSingles">Singles (1X)</label>
+                        <input type="color" id="colorSingles" name="colorSingles">
+                        <input type="text" id="colorSinglesText" class="color-text" maxlength="7" pattern="^#[0-9A-Fa-f]{6}$">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="colorDoubles">Doubles (2X)</label>
+                        <input type="color" id="colorDoubles" name="colorDoubles">
+                        <input type="text" id="colorDoublesText" class="color-text" maxlength="7" pattern="^#[0-9A-Fa-f]{6}$">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="colorQuads">Quads (4X)</label>
+                        <input type="color" id="colorQuads" name="colorQuads">
+                        <input type="text" id="colorQuadsText" class="color-text" maxlength="7" pattern="^#[0-9A-Fa-f]{6}$">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="colorOther">Other Boats</label>
+                        <input type="color" id="colorOther" name="colorOther">
+                        <input type="text" id="colorOtherText" class="color-text" maxlength="7" pattern="^#[0-9A-Fa-f]{6}$">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Row Colors -->
+            <section class="config-section">
+                <h2>Row Colors</h2>
+                <p class="section-description">Alternating row background colors for booking data columns</p>
+
+                <div class="color-grid">
+                    <div class="form-group">
+                        <label for="colorRowEven">Even Rows</label>
+                        <input type="color" id="colorRowEven" name="colorRowEven">
+                        <input type="text" id="colorRowEvenText" class="color-text" maxlength="7" pattern="^#[0-9A-Fa-f]{6}$">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="colorRowOdd">Odd Rows</label>
+                        <input type="color" id="colorRowOdd" name="colorRowOdd">
+                        <input type="text" id="colorRowOddText" class="color-text" maxlength="7" pattern="^#[0-9A-Fa-f]{6}$">
+                    </div>
+                </div>
+            </section>
+
+            <!-- UI Colors -->
+            <section class="config-section">
+                <h2>UI Colors</h2>
+
+                <div class="color-grid">
+                    <div class="form-group">
+                        <label for="colorBoatTypeBadge">Boat Type Badge</label>
+                        <input type="color" id="colorBoatTypeBadge" name="colorBoatTypeBadge">
+                        <input type="text" id="colorBoatTypeBadgeText" class="color-text" maxlength="7" pattern="^#[0-9A-Fa-f]{6}$">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="colorColumnHeader">Column Header</label>
+                        <input type="color" id="colorColumnHeader" name="colorColumnHeader">
+                        <input type="text" id="colorColumnHeaderText" class="color-text" maxlength="7" pattern="^#[0-9A-Fa-f]{6}$">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="colorBookingTime">Booking Time Text</label>
+                        <input type="color" id="colorBookingTime" name="colorBookingTime">
+                        <input type="text" id="colorBookingTimeText" class="color-text" maxlength="7" pattern="^#[0-9A-Fa-f]{6}$">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="colorTypeSeparator">Type Separator Line</label>
+                        <input type="color" id="colorTypeSeparator" name="colorTypeSeparator">
+                        <input type="text" id="colorTypeSeparatorText" class="color-text" maxlength="7" pattern="^#[0-9A-Fa-f]{6}$">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Timing -->
+            <section class="config-section">
+                <h2>Refresh Settings</h2>
+
+                <div class="form-group">
+                    <label for="refreshInterval">
+                        Auto-refresh Interval (minutes)
+                        <span class="help-text">How often to refresh booking data</span>
+                    </label>
+                    <div class="input-with-slider">
+                        <input type="range" id="refreshInterval" name="refreshInterval" min="1" max="60" step="1">
+                        <input type="number" id="refreshIntervalValue" min="1" max="60" step="1">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Action Buttons -->
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    <span>Save Configuration</span>
+                </button>
+                <button type="button" class="btn btn-secondary" id="resetBtn">
+                    <span>Reset to Defaults</span>
+                </button>
+                <a href="/tv.html" class="btn btn-link">
+                    <span>View TV Display</span>
+                </a>
+            </div>
+        </form>
+
+        <!-- Footer -->
+        <footer class="config-footer">
+            <p>Configuration is saved locally on this Raspberry Pi</p>
+            <p class="version">LMRC Booking System v3.0</p>
+        </footer>
+    </div>
+
+    <script src="/js/config.js"></script>
+</body>
+</html>

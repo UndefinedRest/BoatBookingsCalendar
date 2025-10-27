@@ -161,7 +161,7 @@ body {
   font-weight: 700;
   text-align: center;
   padding: var(--gap-medium);
-  background: var(--accent-navy);
+  background: var(--column-header-bg, var(--accent-navy));
   color: white;
   letter-spacing: 1px;
 }
@@ -220,16 +220,16 @@ body {
 
 /* Alternating row colors for booking data columns */
 .boat-entry:nth-child(even) {
-  background: #fafafa;
+  background: var(--row-color-even, #fafafa);
 }
 
 .boat-entry:nth-child(odd) {
-  background: #ffffff;
+  background: var(--row-color-odd, #ffffff);
 }
 
 /* Type group separator - darker line at top when boat type changes */
 .boat-entry.type-separator {
-  border-top: var(--boat-type-separator-width) solid var(--boat-type-separator-color);
+  border-top: var(--boat-type-separator-width) solid var(--type-separator-color, var(--boat-type-separator-color));
   padding-top: var(--gap-tiny);
   margin-top: var(--gap-tiny);
 }
@@ -273,7 +273,7 @@ body {
 }
 
 .boat-type-badge {
-  background: var(--accent-blue);
+  background: var(--boat-type-badge-bg, var(--accent-blue));
   color: white;
   padding: 2px 6px;
   border-radius: 4px;
@@ -337,7 +337,7 @@ body {
 
 .booking-time {
   font-weight: 700;
-  color: var(--status-booked);
+  color: var(--booking-time-color, var(--status-booked));
   font-variant-numeric: tabular-nums;
 }
 

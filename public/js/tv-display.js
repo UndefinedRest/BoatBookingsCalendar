@@ -5,11 +5,6 @@
 
 class TVDisplayController {
   constructor() {
-    // Try to read refresh interval from CSS variable, default to 5 minutes
-    const root = document.documentElement;
-    const refreshIntervalStr = getComputedStyle(root).getPropertyValue('--refresh-interval').trim();
-    this.refreshInterval = refreshIntervalStr ? parseInt(refreshIntervalStr) : 300000; // 5 minutes default
-
     this.clockInterval = 1000; // 1 second
     this.retryDelay = 30000; // 30 seconds on error
 
@@ -24,12 +19,18 @@ class TVDisplayController {
       raceDayHeaders: document.getElementById('raceDayHeaders'),
       todayDateFooter: document.getElementById('todayDateFooter'),
       lastUpdated: document.getElementById('lastUpdated'),
+      clubColumnTitle: document.querySelector('.boat-column:first-child .column-title'),
+      raceColumnTitle: document.querySelector('.boat-column:last-child .column-title'),
     };
 
     this.bookingData = null;
     this.config = null;
-    this.daysToDisplay = 5; // Read from CSS variable or default to 5
+    this.tvDisplayConfig = null;
+    this.daysToDisplay = 5; // Will be overridden by tvDisplayConfig
+    this.refreshInterval = 300000; // Will be overridden by tvDisplayConfig
     this.refreshTimer = null; // Store timer reference for proper cleanup
+    this.configCheckTimer = null; // Timer for checking config changes
+    this.lastConfigVersion = null; // Track config version for change detection
   }
 
   /**
@@ -37,7 +38,15 @@ class TVDisplayController {
    */
   async init() {
     console.log('[TV Display] Initializing...');
+
+    // Load TV display configuration first
+    await this.loadTVDisplayConfig();
+
+    // Apply configuration to UI
+    this.applyConfig();
+
     console.log(`[TV Display] Refresh interval: ${this.refreshInterval / 1000}s`);
+    console.log(`[TV Display] Days to display: ${this.daysToDisplay}`);
 
     // Start clock immediately
     this.updateClock();
@@ -54,6 +63,145 @@ class TVDisplayController {
       console.log('[TV Display] Auto-refresh triggered');
       this.loadData();
     }, this.refreshInterval);
+
+    // Check for config changes every 30 seconds
+    this.configCheckTimer = setInterval(() => {
+      this.checkConfigChanges();
+    }, 30000);
+  }
+
+  /**
+   * Load TV display configuration
+   */
+  async loadTVDisplayConfig() {
+    try {
+      console.log('[TV Display] Loading TV display configuration...');
+
+      const response = await fetch('/api/v1/config/tv-display');
+      if (!response.ok) {
+        throw new Error('Failed to fetch TV display config');
+      }
+
+      const result = await response.json();
+      if (!result.success) {
+        throw new Error('API returned error for TV display config');
+      }
+
+      this.tvDisplayConfig = result.data;
+      this.lastConfigVersion = result.data.version;
+
+      // Update local settings from config
+      this.daysToDisplay = this.tvDisplayConfig.layout.daysToDisplay;
+      this.refreshInterval = this.tvDisplayConfig.timing.refreshInterval;
+
+      console.log('[TV Display] TV display config loaded:', this.tvDisplayConfig);
+
+    } catch (error) {
+      console.error('[TV Display] Error loading TV display config, using defaults:', error);
+      // Use default values if config fails to load
+      this.daysToDisplay = 5;
+      this.refreshInterval = 300000;
+    }
+  }
+
+  /**
+   * Apply configuration to the UI
+   */
+  applyConfig() {
+    if (!this.tvDisplayConfig) {
+      console.log('[TV Display] No TV display config to apply');
+      return;
+    }
+
+    const root = document.documentElement;
+    const config = this.tvDisplayConfig;
+
+    console.log('[TV Display] Applying configuration...');
+
+    // Apply layout settings
+    root.style.setProperty('--days-to-display', config.layout.daysToDisplay);
+    root.style.setProperty('--boat-row-height', `${config.layout.boatRowHeight}px`);
+    root.style.setProperty('--session-row-height', `${config.layout.sessionRowHeight}px`);
+    root.style.setProperty('--boat-name-width', `${config.layout.boatNameWidth}px`);
+
+    // Apply typography settings
+    root.style.setProperty('--font-boat-name', `${config.typography.boatNameSize}px`);
+    root.style.setProperty('--font-booking', `${config.typography.bookingDetailsSize}px`);
+    root.style.setProperty('--font-column-title', `${config.typography.columnTitleSize}px`);
+
+    // Apply boat type colors
+    root.style.setProperty('--boat-type-1x-bg', config.colors.boatTypes.singles);
+    root.style.setProperty('--boat-type-2x-bg', config.colors.boatTypes.doubles);
+    root.style.setProperty('--boat-type-4x-bg', config.colors.boatTypes.quads);
+    root.style.setProperty('--boat-type-other-bg', config.colors.boatTypes.other);
+
+    // Apply row colors
+    root.style.setProperty('--row-color-even', config.colors.rows.even);
+    root.style.setProperty('--row-color-odd', config.colors.rows.odd);
+
+    // Apply UI colors
+    root.style.setProperty('--boat-type-badge-bg', config.colors.ui.boatTypeBadge);
+    root.style.setProperty('--column-header-bg', config.colors.ui.columnHeader);
+    root.style.setProperty('--booking-time-color', config.colors.ui.bookingTime);
+    root.style.setProperty('--type-separator-color', config.colors.ui.typeSeparator);
+
+    // Apply column titles
+    if (this.elements.clubColumnTitle) {
+      this.elements.clubColumnTitle.textContent = config.columns.leftTitle;
+    }
+    if (this.elements.raceColumnTitle) {
+      this.elements.raceColumnTitle.textContent = config.columns.rightTitle;
+    }
+
+    console.log('[TV Display] Configuration applied successfully');
+  }
+
+  /**
+   * Check for configuration changes
+   */
+  async checkConfigChanges() {
+    try {
+      const response = await fetch('/api/v1/config/tv-display');
+      if (!response.ok) return;
+
+      const result = await response.json();
+      if (!result.success) return;
+
+      const newVersion = result.data.version;
+
+      // If version changed, reload config and apply
+      if (newVersion !== this.lastConfigVersion) {
+        console.log('[TV Display] Configuration changed, reloading...');
+        this.tvDisplayConfig = result.data;
+        this.lastConfigVersion = newVersion;
+
+        // Check if refresh interval changed
+        const oldRefreshInterval = this.refreshInterval;
+        this.daysToDisplay = this.tvDisplayConfig.layout.daysToDisplay;
+        this.refreshInterval = this.tvDisplayConfig.timing.refreshInterval;
+
+        // Apply new config
+        this.applyConfig();
+
+        // Re-render to apply layout changes (like days to display)
+        this.render();
+
+        // If refresh interval changed, restart the timer
+        if (oldRefreshInterval !== this.refreshInterval) {
+          console.log('[TV Display] Refresh interval changed, restarting timer');
+          if (this.refreshTimer) {
+            clearInterval(this.refreshTimer);
+          }
+          this.refreshTimer = setInterval(() => {
+            console.log('[TV Display] Auto-refresh triggered');
+            this.loadData();
+          }, this.refreshInterval);
+        }
+      }
+    } catch (error) {
+      // Silently fail - don't disrupt the display
+      console.error('[TV Display] Error checking config changes:', error);
+    }
   }
 
   /**
