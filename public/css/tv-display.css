@@ -43,6 +43,9 @@
   --boat-row-height: 60px;  /* Each boat row with 2 stacked sessions (CONFIGURABLE - increase to fill more vertical space) */
   --boat-name-width: 270px; /* Width for boat name section */
   --session-row-height: 30px; /* Each session row height (CONFIGURABLE - increase for more spacing) */
+
+  /* Multi-Day Display Configuration */
+  --days-to-display: 5; /* CONFIGURABLE: Number of days to show (today + future days) */
 }
 
 /* ===== Reset & Base ===== */
@@ -162,6 +165,39 @@ body {
   display: none; /* Chrome/Safari */
 }
 
+/* ===== Day Headers ===== */
+.day-headers {
+  display: grid;
+  grid-template-columns: var(--boat-name-width) repeat(var(--days-to-display), 1fr);
+  border-bottom: 3px solid var(--border-dark);
+  background: #f8fafc;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.day-header-spacer {
+  width: var(--boat-name-width);
+  padding: var(--gap-small);
+  border-right: 2px solid var(--border-light);
+}
+
+.day-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--gap-small);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent-navy);
+  text-align: center;
+  border-right: 1px solid var(--border-light);
+}
+
+.day-header:last-child {
+  border-right: none;
+}
+
 /* ===== Boat Entry (Boat info left, sessions stacked right) ===== */
 .boat-entry {
   height: var(--boat-row-height);
@@ -214,11 +250,21 @@ body {
   flex: 1;
 }
 
-/* Sessions section (right side - stacked vertically) */
-.boat-sessions {
+/* Multi-day grid section (right side - horizontal day columns) */
+.boat-days-grid {
   flex: 1;
+  display: grid;
+  grid-template-columns: repeat(var(--days-to-display), 1fr);
+}
+
+.day-column {
   display: flex;
   flex-direction: column;
+  border-right: 1px solid var(--border-light);
+}
+
+.day-column:last-child {
+  border-right: none;
 }
 
 .session-item {

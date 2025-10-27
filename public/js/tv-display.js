@@ -16,12 +16,15 @@ class TVDisplayController {
       mainView: document.getElementById('mainView'),
       clubBoatsList: document.getElementById('clubBoatsList'),
       raceBoatsList: document.getElementById('raceBoatsList'),
+      clubDayHeaders: document.getElementById('clubDayHeaders'),
+      raceDayHeaders: document.getElementById('raceDayHeaders'),
       todayDateFooter: document.getElementById('todayDateFooter'),
       lastUpdated: document.getElementById('lastUpdated'),
     };
 
     this.bookingData = null;
     this.config = null;
+    this.daysToDisplay = 5; // Read from CSS variable or default to 5
   }
 
   /**
@@ -97,12 +100,16 @@ class TVDisplayController {
   render() {
     if (!this.bookingData) return;
 
+    // Generate day headers for both columns
+    this.renderDayHeaders();
+
     // Split boats into Club and Race
     const { clubBoats, raceBoats } = this.splitBoatsByClassification();
 
     console.log('[TV Display] Rendering boats:', {
       club: clubBoats.length,
-      race: raceBoats.length
+      race: raceBoats.length,
+      daysToDisplay: this.daysToDisplay
     });
 
     // Render club boats (left column)
@@ -118,6 +125,60 @@ class TVDisplayController {
       const entry = this.createBoatEntry(boat);
       this.elements.raceBoatsList.appendChild(entry);
     });
+  }
+
+  /**
+   * Render day headers for multi-day view
+   */
+  renderDayHeaders() {
+    const headers = this.generateDayHeaders();
+
+    // Render for club column
+    this.elements.clubDayHeaders.innerHTML = '';
+    headers.forEach(header => {
+      this.elements.clubDayHeaders.appendChild(header.cloneNode(true));
+    });
+
+    // Render for race column
+    this.elements.raceDayHeaders.innerHTML = '';
+    headers.forEach(header => {
+      this.elements.raceDayHeaders.appendChild(header.cloneNode(true));
+    });
+  }
+
+  /**
+   * Generate day header elements
+   */
+  generateDayHeaders() {
+    const headers = [];
+
+    // Add spacer for boat name column
+    const spacer = document.createElement('div');
+    spacer.className = 'day-header-spacer';
+    headers.push(spacer);
+
+    // Add headers for each day
+    const today = new Date();
+    for (let i = 0; i < this.daysToDisplay; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+
+      const header = document.createElement('div');
+      header.className = 'day-header';
+
+      if (i === 0) {
+        header.textContent = 'TODAY';
+      } else {
+        // Format: "WED 28"
+        const dayName = date.toLocaleDateString('en-AU', { weekday: 'short' }).toUpperCase();
+        const dayNum = date.getDate();
+        header.textContent = `${dayName} ${dayNum}`;
+      }
+
+      headers.push(header);
+    }
+
+    return headers;
   }
 
   /**
@@ -164,7 +225,7 @@ class TVDisplayController {
   }
 
   /**
-   * Create a boat entry element (boat info on left, sessions stacked vertically on right)
+   * Create a boat entry element (boat info on left, multi-day grid on right)
    */
   createBoatEntry(boat) {
     const entry = document.createElement('div');
@@ -182,32 +243,45 @@ class TVDisplayController {
     `;
     entry.appendChild(boatInfo);
 
-    // Sessions (AM1 and AM2) stacked vertically on right
-    const sessions = document.createElement('div');
-    sessions.className = 'boat-sessions';
+    // Multi-day grid on right
+    const daysGrid = document.createElement('div');
+    daysGrid.className = 'boat-days-grid';
 
-    // AM1 session
-    const am1 = this.createSessionItem(boat, 'morning1', 'AM1');
-    sessions.appendChild(am1);
+    // Create columns for each day
+    const today = new Date();
+    for (let i = 0; i < this.daysToDisplay; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+      const dateStr = this.formatDate(date);
 
-    // AM2 session
-    const am2 = this.createSessionItem(boat, 'morning2', 'AM2');
-    sessions.appendChild(am2);
+      const dayColumn = document.createElement('div');
+      dayColumn.className = 'day-column';
 
-    entry.appendChild(sessions);
+      // AM1 session for this day
+      const am1 = this.createSessionItem(boat, 'morning1', 'AM1', dateStr);
+      dayColumn.appendChild(am1);
+
+      // AM2 session for this day
+      const am2 = this.createSessionItem(boat, 'morning2', 'AM2', dateStr);
+      dayColumn.appendChild(am2);
+
+      daysGrid.appendChild(dayColumn);
+    }
+
+    entry.appendChild(daysGrid);
 
     return entry;
   }
 
   /**
-   * Create a session item (AM1 or AM2)
+   * Create a session item (AM1 or AM2) for a specific date
    */
-  createSessionItem(boat, sessionKey, sessionLabel) {
+  createSessionItem(boat, sessionKey, sessionLabel, dateStr) {
     const item = document.createElement('div');
     item.className = 'session-item';
 
-    // Get booking for TODAY for this session
-    const booking = this.getTodayBooking(boat, sessionKey);
+    // Get booking for this date and session
+    const booking = this.getBookingForDate(boat, sessionKey, dateStr);
 
     if (booking) {
       // Show booking: start time + member name
@@ -231,15 +305,11 @@ class TVDisplayController {
   }
 
   /**
-   * Get booking for today for a specific session
+   * Get booking for a specific date and session
    */
-  getTodayBooking(boat, sessionKey) {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const todayStr = this.formatDate(today);
-
+  getBookingForDate(boat, sessionKey, dateStr) {
     return boat.bookings.find(b =>
-      b.date === todayStr && b.session === sessionKey
+      b.date === dateStr && b.session === sessionKey
     );
   }
 
