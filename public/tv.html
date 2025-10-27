@@ -2,20 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=1920, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LMRC Boat Bookings - TV Display</title>
     <link rel="stylesheet" href="/css/tv-display.css">
 </head>
 <body>
     <div class="tv-display">
-        <!-- Header (always visible) -->
-        <header class="display-header">
-            <h1>LMRC BOAT BOOKINGS</h1>
-            <div class="datetime">
-                <div class="day" id="currentDay">Loading...</div>
-                <div class="time" id="currentTime">--:--</div>
-            </div>
-        </header>
 
         <!-- Loading State -->
         <div class="loading-screen" id="loadingScreen">
@@ -54,10 +46,14 @@
 
         <!-- Footer (always visible) -->
         <footer class="display-footer">
-            <div class="view-info">
+            <div class="footer-left">
                 <span class="view-label" id="todayDateFooter">TODAY - Saturday 26 October</span>
             </div>
-            <div class="refresh-info">
+            <div class="footer-center">
+                <img src="/images/lmrc-logo.png" alt="LMRC Logo" class="footer-logo" onerror="this.style.display='none'">
+                <span class="club-name">Lake Macquarie Rowing Club</span>
+            </div>
+            <div class="footer-right">
                 <span id="lastUpdated">Last updated: --:--</span>
                 <span class="auto-refresh">• Auto-refresh: 10 min</span>
             </div>
