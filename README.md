@@ -2,24 +2,26 @@
 
 Modern TypeScript application that fetches and displays 7-day booking views for Lake Macquarie Rowing Club boats from RevolutioniseSport.
 
-**Now with Web UI!** 🎉
+**✨ Version 1.0.0 - Production Release** 🎉
 
 ## Features
 
 ### Core Features
-- ⚡ **Blazing fast** - ~2 seconds to fetch all boats (parallel API calls)
+- ⚡ **Reliable performance** - Batched request processing prevents rate limiting
 - 🎯 **API-first approach** - Uses RevSport's JSON API with date range parameters
 - 🔒 **Type-safe** - TypeScript with runtime validation (Zod schemas)
 - ✅ **Session validation** - Flags bookings outside standard morning sessions
-- 🔧 **Configurable** - Club name, branding, session times all configurable
+- 🔧 **Configurable** - Club name, branding, session times, logo all configurable
 - 📊 **Complete visibility** - Shows ALL boats, even those with no bookings
 - 📈 **Utilization tracking** - Calculates availability percentages for each boat
+- 🛡️ **Cloudflare-safe** - Intelligent batching and retry logic prevents IP blocks
 
-### Web Interface (NEW in v3.0)
-- 🌐 **Responsive web calendar** - Mobile-first design
-- 🔄 **Auto-refresh** - Updates every 10 minutes automatically
-- 🎨 **Customizable branding** - Colors and club name via configuration
-- 📱 **Modern UI** - Clean, professional design
+### Web Interface
+- 🌐 **TV Display Mode** - Full-screen two-column layout for digital signage
+- 🔄 **Silent background updates** - No loading screen interruptions during refresh
+- 🎨 **Comprehensive configuration** - Colors, typography, layout via web UI
+- 🖼️ **Configurable logo** - Set club logo URL via config page
+- 📱 **Modern UI** - Clean, professional design optimized for TV displays
 - ⚡ **Smart caching** - 10-minute cache TTL to minimize API calls
 - 🔌 **REST API** - JSON endpoints for integration
 
