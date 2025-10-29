@@ -21,6 +21,7 @@ class TVDisplayController {
       lastUpdated: document.getElementById('lastUpdated'),
       clubColumnTitle: document.querySelector('.boat-column:first-child .column-title'),
       raceColumnTitle: document.querySelector('.boat-column:last-child .column-title'),
+      footerLogo: document.querySelector('.footer-logo'),
     };
 
     this.bookingData = null;
@@ -31,6 +32,7 @@ class TVDisplayController {
     this.refreshTimer = null; // Store timer reference for proper cleanup
     this.configCheckTimer = null; // Timer for checking config changes
     this.lastConfigVersion = null; // Track config version for change detection
+    this.isInitialLoad = true; // Track if this is the first load
   }
 
   /**
@@ -153,6 +155,12 @@ class TVDisplayController {
       this.elements.raceColumnTitle.textContent = config.columns.rightTitle;
     }
 
+    // Apply logo URL
+    if (this.elements.footerLogo && config.display && config.display.logoUrl) {
+      this.elements.footerLogo.src = config.display.logoUrl;
+      this.elements.footerLogo.style.display = ''; // Ensure it's visible
+    }
+
     console.log('[TV Display] Configuration applied successfully');
   }
 
@@ -206,10 +214,17 @@ class TVDisplayController {
 
   /**
    * Load booking data and configuration from API
+   * On initial load: Show loading screen
+   * On refresh: Update silently in background
    */
   async loadData() {
     try {
-      console.log('[TV Display] Fetching booking data...');
+      // Only show loading screen on initial load
+      if (this.isInitialLoad) {
+        console.log('[TV Display] Initial load - showing loading screen');
+      } else {
+        console.log('[TV Display] Background refresh - fetching new data silently...');
+      }
 
       // Fetch both bookings and config in parallel
       const [bookingsResponse, configResponse] = await Promise.all([
@@ -233,21 +248,36 @@ class TVDisplayController {
 
       console.log('[TV Display] Data loaded successfully', {
         totalBoats: this.bookingData.metadata.totalBoats,
-        totalBookings: this.bookingData.metadata.totalBookings
+        totalBookings: this.bookingData.metadata.totalBookings,
+        backgroundUpdate: !this.isInitialLoad
       });
 
-      // Render the display
+      // Render the display (seamlessly updates existing view)
       this.render();
 
-      // Hide error/loading, show main view
-      this.showView('main');
+      // Only show view transition on initial load
+      if (this.isInitialLoad) {
+        this.showView('main');
+        this.isInitialLoad = false;
+        console.log('[TV Display] Initial load complete - display is now visible');
+      } else {
+        console.log('[TV Display] Background update complete - display updated silently');
+      }
 
       // Update last updated timestamp
       this.updateLastUpdated();
 
     } catch (error) {
       console.error('[TV Display] Error loading data:', error);
-      this.showError(error.message);
+
+      // On initial load: Show error screen
+      // On refresh: Log error but keep showing existing data
+      if (this.isInitialLoad) {
+        this.showError(error.message);
+      } else {
+        console.error('[TV Display] Background refresh failed - keeping existing data visible');
+        // Don't show error screen, just log it
+      }
 
       // Retry after delay
       setTimeout(() => this.loadData(), this.retryDelay);

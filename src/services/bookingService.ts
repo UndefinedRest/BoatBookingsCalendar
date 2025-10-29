@@ -28,34 +28,55 @@ export class BookingService {
   }
 
   /**
-   * Fetch bookings for all assets (parallel)
+   * Fetch bookings for all assets (in batches to avoid overwhelming the server)
    */
   async fetchAllBookings(assets: Asset[]): Promise<BoatWithBookings[]> {
     this.logger.info(`Fetching bookings for ${assets.length} assets...`);
 
     const startTime = Date.now();
+    const BATCH_SIZE = 5; // Fetch 5 boats at a time to avoid rate limits
+    const BATCH_DELAY_MS = 500; // 500ms delay between batches
+    const results: BoatWithBookings[] = [];
 
-    // Fetch all bookings in parallel
-    const results = await Promise.all(
-      assets.map(async (asset) => {
-        const bookings = await this.fetchAssetBookings(asset.id);
-        const availability = this.calculateAvailability(bookings);
+    const totalBatches = Math.ceil(assets.length / BATCH_SIZE);
 
-        return {
-          ...asset,
-          bookings,
-          availability,
-        };
-      })
-    );
+    // Process in batches
+    for (let i = 0; i < assets.length; i += BATCH_SIZE) {
+      const batch = assets.slice(i, i + BATCH_SIZE);
+      const batchNum = Math.floor(i / BATCH_SIZE) + 1;
+
+      this.logger.debug(`Processing batch ${batchNum}/${totalBatches} (${batch.length} boats)`);
+
+      const batchResults = await Promise.all(
+        batch.map(async (asset) => {
+          const bookings = await this.fetchAssetBookings(asset.id);
+          const availability = this.calculateAvailability(bookings);
+
+          return {
+            ...asset,
+            bookings,
+            availability,
+          };
+        })
+      );
+
+      results.push(...batchResults);
+
+      // Small delay between batches (except last batch)
+      if (i + BATCH_SIZE < assets.length) {
+        this.logger.debug(`Waiting ${BATCH_DELAY_MS}ms before next batch...`);
+        await new Promise(resolve => setTimeout(resolve, BATCH_DELAY_MS));
+      }
+    }
 
     const duration = Date.now() - startTime;
     const totalBookings = results.reduce((sum, r) => sum + r.bookings.length, 0);
 
     this.logger.success(
-      `Fetched ${totalBookings} bookings from ${assets.length} assets in ${duration}ms`
+      `Fetched ${totalBookings} bookings from ${assets.length} assets in ${duration}ms (batched)`
     );
     this.logger.info(`Average per asset: ${Math.round(duration / assets.length)}ms`);
+    this.logger.info(`Processed in ${totalBatches} batches of ${BATCH_SIZE}`);
 
     return results;
   }

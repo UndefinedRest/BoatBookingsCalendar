@@ -16,9 +16,23 @@ export class AuthService {
   private isAuthenticated: boolean = false;
   private csrfToken: string | null = null;
   private logger: Logger;
+  private loginPromise: Promise<void> | null = null; // Mutex to prevent concurrent logins
 
   constructor(private config: Config) {
     this.logger = new Logger('AuthService', config.debug);
+
+    // Validate credentials at startup
+    if (!config.username || !config.password) {
+      throw new Error('Missing username or password in configuration');
+    }
+
+    // Log password characteristics (NOT the password itself!)
+    this.logger.debug('Credentials loaded', {
+      usernameLength: config.username.length,
+      passwordLength: config.password.length,
+      hasSpecialChars: /[^a-zA-Z0-9]/.test(config.password),
+    });
+
     this.cookieJar = new CookieJar();
 
     this.client = wrapper(
@@ -40,9 +54,35 @@ export class AuthService {
   }
 
   /**
-   * Perform complete login workflow
+   * Perform complete login workflow (with mutex to prevent concurrent logins)
    */
   async login(): Promise<void> {
+    // If login already in progress, wait for it
+    if (this.loginPromise) {
+      this.logger.debug('Login already in progress, waiting...');
+      return this.loginPromise;
+    }
+
+    // If already authenticated, skip
+    if (this.isAuthenticated) {
+      this.logger.debug('Already authenticated, skipping login');
+      return;
+    }
+
+    // Start new login
+    this.loginPromise = this._doLogin();
+
+    try {
+      await this.loginPromise;
+    } finally {
+      this.loginPromise = null;
+    }
+  }
+
+  /**
+   * Internal login implementation
+   */
+  private async _doLogin(): Promise<void> {
     this.logger.info('🔐 Starting authentication...');
 
     // Step 1: Fetch login page and extract CSRF token
@@ -113,11 +153,19 @@ export class AuthService {
     try {
       this.logger.debug('Submitting login credentials...');
 
-      const loginData = new URLSearchParams({
-        _token: this.csrfToken!,
-        username: this.config.username,
-        password: this.config.password,
-        remember: 'on',
+      // Create form data with explicit encoding
+      const loginData = new URLSearchParams();
+      loginData.append('_token', this.csrfToken!);
+      loginData.append('username', this.config.username);
+      loginData.append('password', this.config.password);
+      loginData.append('remember', 'on');
+
+      // Log encoded data length for debugging (NOT the actual password!)
+      this.logger.debug('Form data prepared', {
+        tokenLength: this.csrfToken!.length,
+        usernameLength: this.config.username.length,
+        passwordLength: this.config.password.length,
+        encodedLength: loginData.toString().length,
       });
 
       const response = await this.client.post('/login', loginData, {
@@ -134,7 +182,29 @@ export class AuthService {
       this.logger.debug('Login response received', {
         status: response.status,
         cookies: cookieCount,
+        statusText: response.statusText,
       });
+
+      // 🚨 PROMINENT 403 ERROR LOGGING
+      if (response.status === 403) {
+        this.logger.error('🚫 403 FORBIDDEN during login - possible Cloudflare block!');
+        this.logger.error('Login response details:', {
+          status: response.status,
+          statusText: response.statusText,
+          url: response.config.url,
+          headers: response.headers,
+        });
+      }
+
+      // Log if we got rate limiting
+      if (response.status === 429) {
+        this.logger.error('🚫 429 TOO MANY REQUESTS during login - rate limited!');
+        this.logger.error('Login response details:', {
+          status: response.status,
+          statusText: response.statusText,
+          retryAfter: response.headers['retry-after'],
+        });
+      }
 
       // RevSport sometimes returns 500 but still sets cookies and auth works
       // So we'll let verification step determine if auth actually succeeded
@@ -198,8 +268,9 @@ export class AuthService {
 
   /**
    * Make authenticated GET request with auto-retry on session expiry
+   * Includes exponential backoff and limits retries to prevent login storms
    */
-  async get<T = any>(url: string): Promise<T> {
+  async get<T = any>(url: string, retryCount: number = 0): Promise<T> {
     if (!this.isAuthenticated) {
       throw new Error('Not authenticated. Call login() first.');
     }
@@ -208,15 +279,46 @@ export class AuthService {
       const response = await this.client.get(url);
       return response.data;
     } catch (error: any) {
-      // Check if session expired
+      // Check if session expired or forbidden
       if (error.response?.status === 401 || error.response?.status === 403) {
-        this.logger.warn('Session expired, re-authenticating...');
+        // 🚨 PROMINENT 403 ERROR LOGGING
+        if (error.response?.status === 403) {
+          this.logger.error('🚫 403 FORBIDDEN ERROR DETECTED');
+          this.logger.error('Request URL:', url);
+          this.logger.error('This may indicate:');
+          this.logger.error('  - Cloudflare rate limiting');
+          this.logger.error('  - IP blocked by Cloudflare');
+          this.logger.error('  - Session expired');
+          this.logger.error('Error details:', {
+            status: error.response.status,
+            statusText: error.response.statusText,
+            headers: error.response.headers,
+          });
+        }
+
+        // Limit retries to prevent login storms
+        if (retryCount >= 2) {
+          this.logger.error('❌ Max auth retries exceeded (2 attempts)');
+          this.logger.error('Giving up on URL:', url);
+          throw new Error('Authentication failed after multiple retries');
+        }
+
+        this.logger.warn(`Session expired (retry ${retryCount + 1}/2), re-authenticating...`);
         this.isAuthenticated = false;
+
+        // Exponential backoff: 1s, 2s
+        const backoffMs = Math.pow(2, retryCount) * 1000;
+        this.logger.debug(`Waiting ${backoffMs}ms before retry...`);
+        await this.delay(backoffMs);
+
+        // Login with mutex (prevents concurrent logins from multiple 403s)
         await this.login();
-        // Retry request
-        const response = await this.client.get(url);
-        return response.data;
+
+        // Retry request with incremented counter
+        this.logger.debug(`Retrying request (attempt ${retryCount + 2}): ${url}`);
+        return this.get<T>(url, retryCount + 1);
       }
+
       throw error;
     }
   }

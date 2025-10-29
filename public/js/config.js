@@ -161,6 +161,9 @@ class ConfigController {
     if (config.display && config.display.memberNameFormat) {
       document.getElementById('memberNameFormat').value = config.display.memberNameFormat;
     }
+    if (config.display && config.display.logoUrl) {
+      document.getElementById('logoUrl').value = config.display.logoUrl;
+    }
 
     // Colors - Boat Types
     this.setColorValue('colorSingles', config.colors.boatTypes.singles);
@@ -231,6 +234,7 @@ class ConfigController {
 
       display: {
         memberNameFormat: document.getElementById('memberNameFormat').value,
+        logoUrl: document.getElementById('logoUrl').value.trim(),
       },
 
       colors: {

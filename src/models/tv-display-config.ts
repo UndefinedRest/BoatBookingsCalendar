@@ -37,6 +37,7 @@ export const TVDisplayConfigSchema = z.object({
 
   display: z.object({
     memberNameFormat: z.enum(['full', 'first-only', 'first-last-initial']).default('full'),
+    logoUrl: z.string().url().optional().default('https://cdn.revolutionise.com.au/cups/lmrc2019/files/xhvxfyonk8gzzlr4.png'),
   }),
 
   colors: z.object({
@@ -94,6 +95,7 @@ export const DEFAULT_TV_DISPLAY_CONFIG: TVDisplayConfig = {
 
   display: {
     memberNameFormat: 'full',
+    logoUrl: 'https://cdn.revolutionise.com.au/cups/lmrc2019/files/xhvxfyonk8gzzlr4.png',
   },
 
   colors: {
