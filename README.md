@@ -4,6 +4,14 @@ Modern TypeScript application that fetches and displays 7-day booking views for 
 
 **✨ Version 1.0.0 - Production Release** 🎉
 
+> 📚 **Part of the LMRC Digital Solution Suite**
+>
+> This is one component of a multi-project solution. For:
+> - Overall solution architecture → See [../ARCHITECTURE.md](../ARCHITECTURE.md)
+> - Future product roadmap → See [../PRODUCT_ROADMAP.md](../PRODUCT_ROADMAP.md)
+> - Other projects (Noticeboard, Boat Booking) → See [../README.md](../README.md)
+> - Deployment to Raspberry Pi → See [../lmrc-pi-deployment/README.md](../lmrc-pi-deployment/README.md)
+
 ## Features
 
 ### Core Features
@@ -496,14 +504,15 @@ REVSPORT_DEBUG=true npm run dev:server
 
 ## Roadmap
 
-### Future Enhancements
+See [../PRODUCT_ROADMAP.md](../PRODUCT_ROADMAP.md) for the comprehensive future vision including multi-club commercialization.
+
+### Project-Specific Enhancements
 - [ ] User authentication/authorization
 - [ ] Booking creation from web UI
 - [ ] Email notifications for new bookings
 - [ ] Export to iCal format
 - [ ] Historical analytics dashboard
 - [ ] Mobile app (React Native)
-- [ ] Multi-club support (tenant isolation)
 - [ ] Dark mode toggle
 
 ---
