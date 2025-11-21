@@ -18,7 +18,10 @@ export class AuthService {
   private logger: Logger;
   private loginPromise: Promise<void> | null = null; // Mutex to prevent concurrent logins
 
-  constructor(private config: Config) {
+  constructor(
+    private config: Config,
+    axiosInstance?: AxiosInstance // Optional for testing
+  ) {
     this.logger = new Logger('AuthService', config.debug);
 
     // Validate credentials at startup
@@ -33,24 +36,31 @@ export class AuthService {
       hasSpecialChars: /[^a-zA-Z0-9]/.test(config.password),
     });
 
-    this.cookieJar = new CookieJar();
+    // Use provided axios instance (for testing) or create production instance
+    if (axiosInstance) {
+      this.client = axiosInstance;
+      // For test instances, use a simple cookie jar
+      this.cookieJar = new CookieJar();
+    } else {
+      this.cookieJar = new CookieJar();
 
-    this.client = wrapper(
-      axios.create({
-        baseURL: config.baseUrl,
-        jar: this.cookieJar,
-        withCredentials: true,
-        maxRedirects: 5,
-        validateStatus: (status) => status >= 200 && status < 400,
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-          'Accept-Language': 'en-US,en;q=0.9',
-          'Accept-Encoding': 'gzip, deflate, br',
-          'Connection': 'keep-alive',
-        },
-      })
-    );
+      this.client = wrapper(
+        axios.create({
+          baseURL: config.baseUrl,
+          jar: this.cookieJar,
+          withCredentials: true,
+          maxRedirects: 5,
+          validateStatus: (status) => status >= 200 && status < 400,
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Connection': 'keep-alive',
+          },
+        })
+      );
+    }
   }
 
   /**
