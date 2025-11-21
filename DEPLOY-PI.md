@@ -1,6 +1,32 @@
-# Raspberry Pi Local Network Deployment
+# ⚠️ DEPRECATED: Simple PM2 Deployment
 
-Quick guide for deploying the LMRC Booking Viewer on a Raspberry Pi for local club network access.
+## 🚨 THIS DEPLOYMENT METHOD IS DEPRECATED
+
+**For production deployments, use the [Dual-App Deployment System](../lmrc-pi-deployment/README.md) instead.**
+
+This simple PM2-based deployment is kept for:
+- Development/testing purposes only
+- Legacy reference
+- Quick single-app deployments (not recommended for production)
+
+---
+
+## Production Deployment
+
+👉 **Use this instead**: [lmrc-pi-deployment](../lmrc-pi-deployment/README.md)
+
+The production dual-app deployment system provides:
+- ✅ systemd-based service management
+- ✅ Switch between Booking Viewer and Noticeboard
+- ✅ Kiosk mode for TV displays
+- ✅ Centralized credential management
+- ✅ Production-ready auto-restart and logging
+
+---
+
+## Legacy PM2 Deployment (Development Only)
+
+Quick guide for deploying ONLY the Booking Viewer using PM2 (development/testing).
 
 ## Prerequisites
 
@@ -40,8 +66,8 @@ cd lmrc-booking-system
 
 On the Raspberry Pi:
 ```bash
-chmod +x deploy-pi.sh
-./deploy-pi.sh
+chmod +x deploy-pi-legacy.sh
+./deploy-pi-legacy.sh
 ```
 
 The script will:
