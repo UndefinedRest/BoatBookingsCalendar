@@ -5,23 +5,34 @@ Quick guide for deploying the LMRC Booking Viewer on a Raspberry Pi for local cl
 ## Prerequisites
 
 - Raspberry Pi (any model with 1GB+ RAM)
-- Raspberry Pi OS installed
+- Raspberry Pi OS installed with **"boatshed"** user (production standard)
 - Pi connected to club network
 - SSH access to the Pi
 
+**Note:** This guide uses "boatshed" as the standard production username. The application works with any username, but using "boatshed" ensures consistency across all deployments.
+
 ## One-Command Deployment
 
-### Step 1: Copy code to Pi
+### Step 1: Clone repository on the Pi
 
-On your development machine:
+SSH into your Raspberry Pi:
 ```bash
-# Copy the repository to the Pi
-scp -r lmrc-booking-system pi@<pi-ip-address>:/home/pi/
+ssh boatshed@<pi-ip-address>
+```
 
-# Or clone directly on the Pi
-ssh pi@<pi-ip-address>
-cd /home/pi
-git clone <your-repo-url>
+Clone the repository:
+```bash
+cd ~
+git clone https://github.com/UndefinedRest/BoatBookingsCalendar.git lmrc-booking-system
+cd lmrc-booking-system
+```
+
+**Alternative (if using different username for testing):**
+```bash
+# The app works with any username - just use your actual username
+ssh your-username@<pi-ip-address>
+cd ~
+git clone https://github.com/UndefinedRest/BoatBookingsCalendar.git lmrc-booking-system
 cd lmrc-booking-system
 ```
 
@@ -29,7 +40,6 @@ cd lmrc-booking-system
 
 On the Raspberry Pi:
 ```bash
-cd /home/pi/lmrc-booking-system
 chmod +x deploy-pi.sh
 ./deploy-pi.sh
 ```
@@ -121,10 +131,12 @@ pm2 status
 When you make changes or pull updates:
 
 ```bash
-cd /home/pi/lmrc-booking-system
-git pull
+cd ~/lmrc-booking-system
+git pull origin main
+npm install  # In case there are new dependencies
 npm run build
 pm2 restart lmrc-booking-viewer
+pm2 logs lmrc-booking-viewer --lines 20  # Verify no errors
 ```
 
 ## Troubleshooting
