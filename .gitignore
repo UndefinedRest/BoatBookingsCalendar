@@ -37,3 +37,9 @@ dist/
 
 # Local configuration (per-device settings)
 config/tv-display.json
+
+# Test coverage reports
+coverage/
+
+# Claude Code settings
+.claude/
