@@ -30,7 +30,18 @@
       "Bash(taskkill:*)",
       "Bash(git rm:*)",
       "Bash(npm run build:*)",
-      "Bash(timeout /t 3)"
+      "Bash(timeout /t 3)",
+      "Bash(git reset:*)",
+      "Read(//c/dev/Projects/LMRC/Noticeboard/**)",
+      "Read(//c/dev/Projects/LMRC/**)",
+      "Bash(git init:*)",
+      "Bash(chmod:*)",
+      "Bash(git tag:*)",
+      "Bash(else echo \"Git repo: No\")",
+      "Bash(fi)",
+      "Bash(done)",
+      "Bash(git remote add:*)",
+      "Bash(git branch:*)"
     ],
     "deny": [],
     "ask": []

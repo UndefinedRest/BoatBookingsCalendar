@@ -6,11 +6,12 @@ Modern TypeScript application that fetches and displays 7-day booking views for 
 
 > 📚 **Part of the LMRC Digital Solution Suite**
 >
-> This is one component of a multi-project solution. For:
-> - Overall solution architecture → See [../ARCHITECTURE.md](../ARCHITECTURE.md)
-> - Future product roadmap → See [../PRODUCT_ROADMAP.md](../PRODUCT_ROADMAP.md)
-> - Other projects (Noticeboard, Boat Booking) → See [../README.md](../README.md)
-> - Deployment to Raspberry Pi → See [../lmrc-pi-deployment/README.md](../lmrc-pi-deployment/README.md)
+> This is one component of a multi-project solution. For complete documentation:
+> - **Solution documentation** → See [../docs/](../docs/)
+> - **Architecture overview** → See [../docs/architecture/overview.md](../docs/architecture/overview.md)
+> - **Product roadmap** → See [../docs/planning/roadmap.md](../docs/planning/roadmap.md)
+> - **Deployment to Raspberry Pi** → See [../docs/deployment/production-setup.md](../docs/deployment/production-setup.md)
+> - **Getting started (dev)** → See [../docs/development/getting-started.md](../docs/development/getting-started.md)
 
 ## Features
 
