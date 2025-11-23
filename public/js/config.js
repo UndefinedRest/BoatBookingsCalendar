@@ -7,6 +7,7 @@ class ConfigController {
   constructor() {
     this.form = document.getElementById('configForm');
     this.resetBtn = document.getElementById('resetBtn');
+    this.forceRefreshBtn = document.getElementById('forceRefreshBtn');
     this.statusMessage = document.getElementById('statusMessage');
 
     this.currentConfig = null;
@@ -41,6 +42,11 @@ class ConfigController {
     // Reset button
     this.resetBtn.addEventListener('click', () => {
       this.resetConfig();
+    });
+
+    // Force refresh button
+    this.forceRefreshBtn.addEventListener('click', () => {
+      this.forceRefresh();
     });
 
     // Setup slider-number input sync for all range inputs
@@ -367,6 +373,50 @@ class ConfigController {
       // Remove loading state
       this.resetBtn.disabled = false;
       this.resetBtn.classList.remove('loading');
+    }
+  }
+
+  /**
+   * Force refresh boat data from RevSport
+   */
+  async forceRefresh() {
+    try {
+      console.log('[Config] Forcing data refresh...');
+
+      // Show loading state
+      this.forceRefreshBtn.disabled = true;
+      this.forceRefreshBtn.classList.add('loading');
+      this.forceRefreshBtn.querySelector('span').textContent = 'Refreshing...';
+
+      // Call API to force refresh
+      const response = await fetch('/api/v1/bookings?refresh=true');
+
+      if (!response.ok) {
+        throw new Error('Failed to refresh boat data');
+      }
+
+      const result = await response.json();
+      if (!result.success) {
+        throw new Error(result.message || 'API returned error');
+      }
+
+      const boatCount = result.data?.boats?.length || 0;
+      console.log('[Config] Data refreshed successfully, boats:', boatCount);
+      this.showStatus('success', `Data refreshed successfully! Found ${boatCount} boats. The TV display will update automatically.`);
+
+      // Remove loading state
+      this.forceRefreshBtn.disabled = false;
+      this.forceRefreshBtn.classList.remove('loading');
+      this.forceRefreshBtn.querySelector('span').textContent = 'Force Refresh Data';
+
+    } catch (error) {
+      console.error('[Config] Error forcing refresh:', error);
+      this.showStatus('error', `Failed to refresh data: ${error.message}`);
+
+      // Remove loading state
+      this.forceRefreshBtn.disabled = false;
+      this.forceRefreshBtn.classList.remove('loading');
+      this.forceRefreshBtn.querySelector('span').textContent = 'Force Refresh Data';
     }
   }
 
