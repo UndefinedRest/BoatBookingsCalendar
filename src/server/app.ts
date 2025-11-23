@@ -28,9 +28,12 @@ export function createApp(): Express {
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        styleSrc: ["'self'", "'unsafe-inline'"], // Allow inline styles for now
-        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"], // Allow inline scripts
+        scriptSrcAttr: ["'unsafe-inline'"], // Allow inline event handlers (onerror, etc.)
         imgSrc: ["'self'", 'data:', 'https:'],
+        fontSrc: ["'self'", 'https:', 'data:'],
+        connectSrc: ["'self'"], // Allow API calls to same origin
       },
     },
   }));
