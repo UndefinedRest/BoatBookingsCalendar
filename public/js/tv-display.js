@@ -147,6 +147,13 @@ class TVDisplayController {
     root.style.setProperty('--booking-time-color', config.colors.ui.bookingTime);
     root.style.setProperty('--type-separator-color', config.colors.ui.typeSeparator);
 
+    // Apply damaged boat colors
+    if (config.colors.damaged) {
+      root.style.setProperty('--damaged-row-bg', config.colors.damaged.rowBackground);
+      root.style.setProperty('--damaged-icon-color', config.colors.damaged.iconColor);
+      root.style.setProperty('--damaged-text-color', config.colors.damaged.textColor);
+    }
+
     // Apply column titles
     if (this.elements.clubColumnTitle) {
       this.elements.clubColumnTitle.textContent = config.columns.leftTitle;
@@ -437,9 +444,16 @@ class TVDisplayController {
     // Use nickname if available, otherwise display name
     const boatName = boat.nickname || boat.displayName;
 
+    // Check if boat is damaged (check all name fields)
+    const isDamaged = this.isDamagedBoat(boat);
+    if (isDamaged) {
+      entry.classList.add('damaged-boat');
+    }
+
     // Build boat info HTML
     let boatInfoHTML = `
       <span class="boat-type-badge">${boat.type}</span>
+      ${isDamaged ? '<span class="damaged-icon" title="Boat is damaged">⚠️</span>' : ''}
       <span class="boat-name-text" title="${this.escapeHtml(boatName)}">${this.escapeHtml(boatName)}</span>
     `;
 
@@ -495,6 +509,14 @@ class TVDisplayController {
     }
 
     entry.appendChild(daysGrid);
+
+    // Add damaged overlay if boat is damaged
+    if (isDamaged) {
+      const damagedOverlay = document.createElement('div');
+      damagedOverlay.className = 'damaged-overlay';
+      damagedOverlay.textContent = 'DAMAGED';
+      entry.appendChild(damagedOverlay);
+    }
 
     return entry;
   }
@@ -709,6 +731,25 @@ class TVDisplayController {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+  }
+
+  /**
+   * Check if boat is damaged based on name or full boat data
+   */
+  isDamagedBoat(boat) {
+    // Check if boat is a string (legacy) or object
+    if (typeof boat === 'string') {
+      return boat.toLowerCase().includes('damaged');
+    }
+
+    // Check nickname, displayName, and fullName for "damaged"
+    const nickname = (boat.nickname || '').toLowerCase();
+    const displayName = (boat.displayName || '').toLowerCase();
+    const fullName = (boat.fullName || '').toLowerCase();
+
+    return nickname.includes('damaged') ||
+           displayName.includes('damaged') ||
+           fullName.includes('damaged');
   }
 }
 

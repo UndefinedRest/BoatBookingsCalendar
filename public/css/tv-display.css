@@ -28,6 +28,11 @@
   --boat-type-4x-bg: #f0fdf4;      /* Quads - very subtle green */
   --boat-type-other-bg: #fafafa;   /* Other boats - very subtle gray */
 
+  /* Damaged Boat Colors - CONFIGURABLE */
+  --damaged-row-bg: #fee2e2;       /* Light red background for damaged boats */
+  --damaged-icon-color: #dc2626;   /* Red color for warning icon */
+  --damaged-text-color: #991b1b;   /* Dark red for "DAMAGED" overlay text */
+
   /* Boat Type Group Separator */
   --boat-type-separator-color: #64748b;  /* Dark separator line between groups */
   --boat-type-separator-width: 2px;
@@ -430,6 +435,45 @@ body {
 
 .auto-refresh {
   opacity: 0.7;
+}
+
+/* ===== Damaged Boat Styles ===== */
+.boat-entry.damaged-boat {
+  position: relative; /* For absolute positioning of overlay */
+}
+
+.boat-entry.damaged-boat .boat-info {
+  background: var(--damaged-row-bg) !important; /* Override type colors */
+}
+
+.damaged-icon {
+  font-size: 24px;
+  color: var(--damaged-icon-color);
+  flex-shrink: 0;
+}
+
+.damaged-overlay {
+  position: absolute;
+  left: var(--boat-name-width);
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  font-weight: 900;
+  color: var(--damaged-text-color);
+  opacity: 0.25;
+  pointer-events: none; /* Don't block interaction with bookings */
+  z-index: 1; /* Below bookings */
+  letter-spacing: 8px;
+}
+
+/* Ensure bookings remain visible over damaged overlay */
+.boat-entry.damaged-boat .boat-days-grid {
+  position: relative;
+  z-index: 2; /* Above overlay */
 }
 
 /* ===== Utility Classes ===== */

@@ -57,6 +57,11 @@ export const TVDisplayConfigSchema = z.object({
       bookingTime: ColorSchema.default('#dc2626'),
       typeSeparator: ColorSchema.default('#64748b'),
     }),
+    damaged: z.object({
+      rowBackground: ColorSchema.default('#fee2e2'),
+      iconColor: ColorSchema.default('#dc2626'),
+      textColor: ColorSchema.default('#991b1b'),
+    }),
   }),
 
   timing: z.object({
@@ -114,6 +119,11 @@ export const DEFAULT_TV_DISPLAY_CONFIG: TVDisplayConfig = {
       columnHeader: '#1e40af',
       bookingTime: '#dc2626',
       typeSeparator: '#64748b',
+    },
+    damaged: {
+      rowBackground: '#fee2e2',
+      iconColor: '#dc2626',
+      textColor: '#991b1b',
     },
   },
 
