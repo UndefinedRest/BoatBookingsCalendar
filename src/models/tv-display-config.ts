@@ -81,7 +81,7 @@ export const DEFAULT_TV_DISPLAY_CONFIG: TVDisplayConfig = {
   version: 1,
 
   layout: {
-    daysToDisplay: 5,
+    daysToDisplay: 7,
     boatRowHeight: 60,
     sessionRowHeight: 30,
     boatNameWidth: 360,
