@@ -34,6 +34,7 @@ export function createApp(): Express {
         imgSrc: ["'self'", 'data:', 'https:'],
         fontSrc: ["'self'", 'https:', 'data:'],
         connectSrc: ["'self'"], // Allow API calls to same origin
+        upgradeInsecureRequests: null, // Disable for HTTP-only deployment (Pi)
       },
     },
   }));
