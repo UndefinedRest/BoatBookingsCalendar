@@ -68,9 +68,9 @@ export function createApp(): Express {
     res.sendFile(join(publicPath, 'index.html'));
   });
 
-  // Serve TV display for /tv
+  // Serve TV display for /tv (same as root)
   app.get('/tv', (_req, res) => {
-    res.sendFile(join(publicPath, 'tv.html'));
+    res.sendFile(join(publicPath, 'index.html'));
   });
 
   // Serve configuration page for /config
