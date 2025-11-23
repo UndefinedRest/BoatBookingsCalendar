@@ -69,6 +69,11 @@ export function createApp(): Express {
     res.sendFile(join(publicPath, 'tv.html'));
   });
 
+  // Serve configuration page for /config
+  app.get('/config', (_req, res) => {
+    res.sendFile(join(publicPath, 'config.html'));
+  });
+
   // 404 handler
   app.use(notFoundHandler);
 
