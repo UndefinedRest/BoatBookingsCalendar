@@ -1,0 +1,128 @@
+name: Test
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test:
+    name: Run Tests & Coverage
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests with coverage
+        run: npm run test:coverage
+
+      - name: Check coverage thresholds
+        run: |
+          node -e "
+          const fs = require('fs');
+          const coveragePath = './coverage/coverage-summary.json';
+
+          if (!fs.existsSync(coveragePath)) {
+            console.error('Coverage summary not found');
+            process.exit(1);
+          }
+
+          const coverage = JSON.parse(fs.readFileSync(coveragePath, 'utf-8'));
+          const total = coverage.total;
+          const threshold = 60;
+
+          console.log('Coverage Results:');
+          console.log('  Lines:', total.lines.pct.toFixed(2) + '%');
+          console.log('  Functions:', total.functions.pct.toFixed(2) + '%');
+          console.log('  Branches:', total.branches.pct.toFixed(2) + '%');
+          console.log('  Statements:', total.statements.pct.toFixed(2) + '%');
+          console.log('');
+
+          const failures = [];
+
+          if (total.lines.pct < threshold) {
+            failures.push('Lines: ' + total.lines.pct.toFixed(2) + '% < ' + threshold + '%');
+          }
+          if (total.functions.pct < threshold) {
+            failures.push('Functions: ' + total.functions.pct.toFixed(2) + '% < ' + threshold + '%');
+          }
+          if (total.branches.pct < threshold) {
+            failures.push('Branches: ' + total.branches.pct.toFixed(2) + '% < ' + threshold + '%');
+          }
+          if (total.statements.pct < threshold) {
+            failures.push('Statements: ' + total.statements.pct.toFixed(2) + '% < ' + threshold + '%');
+          }
+
+          if (failures.length > 0) {
+            console.error('❌ Coverage below threshold:');
+            failures.forEach(f => console.error('  -', f));
+            process.exit(1);
+          }
+
+          console.log('✅ All coverage thresholds met!');
+          "
+
+      - name: Upload coverage to Codecov (optional)
+        uses: codecov/codecov-action@v4
+        if: always()
+        with:
+          file: ./coverage/lcov.info
+          fail_ci_if_error: false
+          flags: unittests
+          name: lmrc-booking-system
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        continue-on-error: true
+
+      - name: Generate coverage badge data
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        run: |
+          node -e "
+          const fs = require('fs');
+          const coverage = JSON.parse(fs.readFileSync('./coverage/coverage-summary.json', 'utf-8'));
+          const pct = Math.round(coverage.total.lines.pct);
+          const color = pct >= 80 ? 'brightgreen' : pct >= 60 ? 'yellow' : 'red';
+          console.log('COVERAGE_PCT=' + pct);
+          console.log('COVERAGE_COLOR=' + color);
+          " >> $GITHUB_ENV
+
+      - name: Comment PR with coverage
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const coverage = JSON.parse(fs.readFileSync('./coverage/coverage-summary.json', 'utf-8'));
+            const total = coverage.total;
+
+            const comment = `## Test Coverage Report
+
+            | Metric | Coverage | Status |
+            |--------|----------|--------|
+            | Lines | ${total.lines.pct.toFixed(2)}% | ${total.lines.pct >= 60 ? '✅' : '❌'} |
+            | Functions | ${total.functions.pct.toFixed(2)}% | ${total.functions.pct >= 60 ? '✅' : '❌'} |
+            | Branches | ${total.branches.pct.toFixed(2)}% | ${total.branches.pct >= 60 ? '✅' : '❌'} |
+            | Statements | ${total.statements.pct.toFixed(2)}% | ${total.statements.pct >= 60 ? '✅' : '❌'} |
+
+            **Threshold**: 60% minimum
+
+            ${total.lines.pct >= 60 && total.functions.pct >= 60 && total.branches.pct >= 60 && total.statements.pct >= 60 ? '✅ All thresholds met!' : '❌ Coverage below threshold - please add more tests'}
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
