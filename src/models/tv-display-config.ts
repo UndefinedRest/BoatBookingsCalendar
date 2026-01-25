@@ -61,6 +61,10 @@ export const TVDisplayConfigSchema = z.object({
       rowBackground: ColorSchema.default('#fee2e2'),
       iconColor: ColorSchema.default('#dc2626'),
       textColor: ColorSchema.default('#991b1b'),
+    }).optional().default({
+      rowBackground: '#fee2e2',
+      iconColor: '#dc2626',
+      textColor: '#991b1b',
     }),
   }),
 
