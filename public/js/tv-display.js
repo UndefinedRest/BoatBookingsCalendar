@@ -168,6 +168,13 @@ class TVDisplayController {
       this.elements.footerLogo.style.display = ''; // Ensure it's visible
     }
 
+    // Update auto-refresh display
+    const autoRefreshDisplay = document.getElementById('autoRefreshDisplay');
+    if (autoRefreshDisplay && config.timing && config.timing.refreshInterval) {
+      const minutes = Math.round(config.timing.refreshInterval / 60000);
+      autoRefreshDisplay.textContent = `• Auto-refresh: ${minutes} min`;
+    }
+
     console.log('[TV Display] Configuration applied successfully');
   }
 
