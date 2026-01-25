@@ -260,6 +260,12 @@ class ConfigController {
           bookingTime: document.getElementById('colorBookingTime').value,
           typeSeparator: document.getElementById('colorTypeSeparator').value,
         },
+        // Preserve damaged colors from current config (no UI for these)
+        damaged: this.currentConfig?.colors?.damaged || {
+          rowBackground: '#fee2e2',
+          iconColor: '#dc2626',
+          textColor: '#991b1b',
+        },
       },
 
       timing: {

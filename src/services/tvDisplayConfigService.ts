@@ -76,8 +76,11 @@ export class TVDisplayConfigService {
    * Save configuration to file
    */
   async save(config: TVDisplayConfig): Promise<void> {
+    logger.debug(`Attempting to save config to: ${CONFIG_FILE_PATH}`);
+
     try {
       // Validate config before saving
+      logger.debug('Validating config with Zod schema');
       const validatedConfig = TVDisplayConfigSchema.parse(config);
 
       // Update lastModified timestamp
@@ -86,9 +89,11 @@ export class TVDisplayConfigService {
 
       // Ensure config directory exists
       const configDir = path.dirname(CONFIG_FILE_PATH);
+      logger.debug(`Ensuring config directory exists: ${configDir}`);
       await fs.mkdir(configDir, { recursive: true });
 
       // Write config to file with pretty formatting
+      logger.debug(`Writing config file to: ${CONFIG_FILE_PATH}`);
       await fs.writeFile(
         CONFIG_FILE_PATH,
         JSON.stringify(validatedConfig, null, 2),
@@ -99,10 +104,10 @@ export class TVDisplayConfigService {
       this.cachedConfig = validatedConfig;
       this.lastLoadTime = Date.now();
 
-      logger.success('TV display config saved successfully');
+      logger.success(`TV display config saved successfully to ${CONFIG_FILE_PATH}`);
 
     } catch (error) {
-      logger.error('Error saving TV display config:', error);
+      logger.error(`Error saving TV display config to ${CONFIG_FILE_PATH}:`, error);
       throw new Error('Failed to save configuration');
     }
   }

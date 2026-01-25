@@ -30,7 +30,30 @@ export class Logger {
   error(message: string, error?: any) {
     console.error(`[${this.context}] ❌ ${message}`);
     if (error) {
-      console.error(error);
+      // Serialize error details for better logging
+      if (error instanceof Error) {
+        console.error(`  Error name: ${error.name}`);
+        console.error(`  Error message: ${error.message}`);
+        if (error.stack) {
+          console.error(`  Stack trace: ${error.stack}`);
+        }
+        // Handle Zod errors specifically
+        if ('issues' in error) {
+          console.error(`  Validation issues: ${JSON.stringify((error as any).issues, null, 2)}`);
+        }
+        // Handle Node.js system errors (EACCES, ENOENT, etc.)
+        if ('code' in error) {
+          console.error(`  Error code: ${(error as NodeJS.ErrnoException).code}`);
+        }
+        if ('path' in error) {
+          console.error(`  Path: ${(error as NodeJS.ErrnoException).path}`);
+        }
+        if ('syscall' in error) {
+          console.error(`  Syscall: ${(error as NodeJS.ErrnoException).syscall}`);
+        }
+      } else {
+        console.error(error);
+      }
     }
   }
 
