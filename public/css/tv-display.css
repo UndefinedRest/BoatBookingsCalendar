@@ -339,6 +339,8 @@ body {
   display: flex;
   flex-direction: column;
   border-right: 1px solid var(--border-light);
+  min-width: 0; /* Allow column to shrink below content width */
+  overflow: hidden; /* Prevent content from expanding grid cell */
 }
 
 .day-column:last-child {
@@ -353,6 +355,8 @@ body {
   padding: 0 var(--gap-small);
   font-size: var(--font-booking);
   border-bottom: 1px solid var(--border-light);
+  min-width: 0; /* Allow text truncation to work in flex children */
+  overflow: hidden; /* Contain long content within cell bounds */
 }
 
 .session-item:last-child {
