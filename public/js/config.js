@@ -63,6 +63,7 @@ class ConfigController {
     this.setupColorSync('colorSingles');
     this.setupColorSync('colorDoubles');
     this.setupColorSync('colorQuads');
+    this.setupColorSync('colorTinnies');
     this.setupColorSync('colorOther');
     this.setupColorSync('colorRowEven');
     this.setupColorSync('colorRowOdd');
@@ -175,6 +176,7 @@ class ConfigController {
     this.setColorValue('colorSingles', config.colors.boatTypes.singles);
     this.setColorValue('colorDoubles', config.colors.boatTypes.doubles);
     this.setColorValue('colorQuads', config.colors.boatTypes.quads);
+    this.setColorValue('colorTinnies', config.colors.boatTypes.tinnies);
     this.setColorValue('colorOther', config.colors.boatTypes.other);
 
     // Colors - Rows
@@ -248,6 +250,7 @@ class ConfigController {
           singles: document.getElementById('colorSingles').value,
           doubles: document.getElementById('colorDoubles').value,
           quads: document.getElementById('colorQuads').value,
+          tinnies: document.getElementById('colorTinnies').value,
           other: document.getElementById('colorOther').value,
         },
         rows: {
