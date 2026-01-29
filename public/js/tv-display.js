@@ -15,12 +15,16 @@ class TVDisplayController {
       mainView: document.getElementById('mainView'),
       clubBoatsList: document.getElementById('clubBoatsList'),
       raceBoatsList: document.getElementById('raceBoatsList'),
+      tinniesList: document.getElementById('tinniesList'),
+      tinniesSection: document.getElementById('tinniesSection'),
       clubDayHeaders: document.getElementById('clubDayHeaders'),
       raceDayHeaders: document.getElementById('raceDayHeaders'),
+      tinniesDayHeaders: document.getElementById('tinniesDayHeaders'),
       todayDateFooter: document.getElementById('todayDateFooter'),
       lastUpdated: document.getElementById('lastUpdated'),
       clubColumnTitle: document.querySelector('.boat-column:first-child .column-title'),
-      raceColumnTitle: document.querySelector('.boat-column:last-child .column-title'),
+      raceColumnTitle: document.querySelector('.boat-column:last-child .column-title:not(.tinnies-title)'),
+      tinniesColumnTitle: document.querySelector('.tinnies-title'),
       footerLogo: document.querySelector('.footer-logo'),
     };
 
@@ -135,6 +139,7 @@ class TVDisplayController {
     root.style.setProperty('--boat-type-1x-bg', config.colors.boatTypes.singles);
     root.style.setProperty('--boat-type-2x-bg', config.colors.boatTypes.doubles);
     root.style.setProperty('--boat-type-4x-bg', config.colors.boatTypes.quads);
+    root.style.setProperty('--boat-type-tinnies-bg', config.colors.boatTypes.tinnies);
     root.style.setProperty('--boat-type-other-bg', config.colors.boatTypes.other);
 
     // Apply row colors
@@ -160,6 +165,9 @@ class TVDisplayController {
     }
     if (this.elements.raceColumnTitle) {
       this.elements.raceColumnTitle.textContent = config.columns.rightTitle;
+    }
+    if (this.elements.tinniesColumnTitle && config.columns.tinniesTitle) {
+      this.elements.tinniesColumnTitle.textContent = config.columns.tinniesTitle;
     }
 
     // Apply logo URL
@@ -304,15 +312,16 @@ class TVDisplayController {
   render() {
     if (!this.bookingData) return;
 
-    // Generate day headers for both columns
+    // Generate day headers for all columns
     this.renderDayHeaders();
 
-    // Split boats into Club and Race
-    const { clubBoats, raceBoats } = this.splitBoatsByClassification();
+    // Split boats into Club, Race, and Tinnies
+    const { clubBoats, raceBoats, tinnies } = this.splitBoatsByClassification();
 
     console.log('[TV Display] Rendering boats:', {
       club: clubBoats.length,
       race: raceBoats.length,
+      tinnies: tinnies.length,
       daysToDisplay: this.daysToDisplay
     });
 
@@ -325,7 +334,7 @@ class TVDisplayController {
       prevClubType = boat.type;
     });
 
-    // Render race boats (right column)
+    // Render race boats (right column, top section)
     this.elements.raceBoatsList.innerHTML = '';
     let prevRaceType = null;
     raceBoats.forEach(boat => {
@@ -333,6 +342,20 @@ class TVDisplayController {
       this.elements.raceBoatsList.appendChild(entry);
       prevRaceType = boat.type;
     });
+
+    // Render tinnies (right column, bottom section)
+    if (this.elements.tinniesList) {
+      this.elements.tinniesList.innerHTML = '';
+      tinnies.forEach(boat => {
+        const entry = this.createBoatEntry(boat, null, true);
+        this.elements.tinniesList.appendChild(entry);
+      });
+
+      // Show/hide tinnies section based on whether there are any
+      if (this.elements.tinniesSection) {
+        this.elements.tinniesSection.style.display = tinnies.length > 0 ? '' : 'none';
+      }
+    }
   }
 
   /**
@@ -352,6 +375,14 @@ class TVDisplayController {
     headers.forEach(header => {
       this.elements.raceDayHeaders.appendChild(header.cloneNode(true));
     });
+
+    // Render for tinnies section
+    if (this.elements.tinniesDayHeaders) {
+      this.elements.tinniesDayHeaders.innerHTML = '';
+      headers.forEach(header => {
+        this.elements.tinniesDayHeaders.appendChild(header.cloneNode(true));
+      });
+    }
   }
 
   /**
@@ -390,15 +421,22 @@ class TVDisplayController {
   }
 
   /**
-   * Split boats by classification (Club vs Race) and group by type
+   * Split boats by classification (Club vs Race) and category (Rowing vs Tinnie)
    */
   splitBoatsByClassification() {
     const clubBoats = [];
     const raceBoats = [];
+    const tinnies = [];
 
     this.bookingData.boats.forEach(boat => {
-      // Filter out boats with Unknown type
-      if (boat.type === 'Unknown') {
+      // Filter out boats with Unknown type (unless they're tinnies)
+      if (boat.type === 'Unknown' && boat.category !== 'tinnie') {
+        return;
+      }
+
+      // Tinnies go to their own section
+      if (boat.category === 'tinnie') {
+        tinnies.push(boat);
         return;
       }
 
@@ -429,18 +467,21 @@ class TVDisplayController {
     clubBoats.sort(sortBoats);
     raceBoats.sort(sortBoats);
 
-    return { clubBoats, raceBoats };
+    // Sort tinnies by display name
+    tinnies.sort((a, b) => getBoatName(a).localeCompare(getBoatName(b)));
+
+    return { clubBoats, raceBoats, tinnies };
   }
 
   /**
    * Create a boat entry element (boat info on left, multi-day grid on right)
    */
-  createBoatEntry(boat, previousType = null) {
+  createBoatEntry(boat, previousType = null, isTinnie = false) {
     const entry = document.createElement('div');
     entry.className = 'boat-entry';
 
     // Add boat type background color class
-    const typeClass = this.getBoatTypeClass(boat.type);
+    const typeClass = isTinnie ? 'type-tinnie' : this.getBoatTypeClass(boat.type);
     entry.classList.add(typeClass);
 
     // Add separator class if boat type changed from previous

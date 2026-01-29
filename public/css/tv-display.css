@@ -26,6 +26,7 @@
   --boat-type-1x-bg: #fffbeb;      /* Singles - very subtle yellow */
   --boat-type-2x-bg: #eff6ff;      /* Doubles - very subtle blue */
   --boat-type-4x-bg: #f0fdf4;      /* Quads - very subtle green */
+  --boat-type-tinnies-bg: #e5e5e5; /* Tinnies - light grey */
   --boat-type-other-bg: #fafafa;   /* Other boats - very subtle gray */
 
   /* Damaged Boat Colors - CONFIGURABLE */
@@ -181,6 +182,21 @@ body {
   display: none; /* Chrome/Safari */
 }
 
+/* ===== Tinnies Section ===== */
+.tinnies-section {
+  border-top: 3px solid var(--border-dark);
+  margin-top: auto; /* Push to bottom of column */
+}
+
+.tinnies-section .column-title {
+  font-size: calc(var(--font-column-title) * 0.85); /* Slightly smaller than main column titles */
+  padding: var(--gap-small) var(--gap-medium);
+}
+
+.tinnies-section .boats-list {
+  flex: none; /* Don't grow to fill space */
+}
+
 /* ===== Day Headers ===== */
 .day-headers {
   display: grid;
@@ -275,6 +291,10 @@ body {
 
 .boat-entry.type-other .boat-info {
   background: var(--boat-type-other-bg);
+}
+
+.boat-entry.type-tinnie .boat-info {
+  background: var(--boat-type-tinnies-bg);
 }
 
 .boat-type-badge {

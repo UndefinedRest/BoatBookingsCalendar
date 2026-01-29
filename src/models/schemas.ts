@@ -6,6 +6,7 @@ import { z } from 'zod';
 
 export const BoatTypeSchema = z.enum(['1X', '2X', '4X', '8X', 'Unknown']);
 export const BoatClassificationSchema = z.enum(['T', 'R', 'RT']);
+export const BoatCategorySchema = z.enum(['rowing', 'tinnie']);
 export const SessionTypeSchema = z.enum(['morning1', 'morning2', 'custom']);
 
 export const AssetSchema = z.object({
@@ -15,6 +16,7 @@ export const AssetSchema = z.object({
   nickname: z.string(),
   type: BoatTypeSchema,
   classification: BoatClassificationSchema,
+  category: BoatCategorySchema,
   weight: z.string().nullable(),
   sweepCapable: z.boolean(),
   calendarUrl: z.string(),

@@ -33,6 +33,7 @@ export const TVDisplayConfigSchema = z.object({
   columns: z.object({
     leftTitle: z.string().max(50).default('CLUB BOATS'),
     rightTitle: z.string().max(50).default('RACE BOATS'),
+    tinniesTitle: z.string().max(50).default('TINNIES'),
   }),
 
   display: z.object({
@@ -45,6 +46,7 @@ export const TVDisplayConfigSchema = z.object({
       singles: ColorSchema.default('#fffbeb'),
       doubles: ColorSchema.default('#eff6ff'),
       quads: ColorSchema.default('#f0fdf4'),
+      tinnies: ColorSchema.default('#e5e5e5'),
       other: ColorSchema.default('#fafafa'),
     }),
     rows: z.object({
@@ -100,6 +102,7 @@ export const DEFAULT_TV_DISPLAY_CONFIG: TVDisplayConfig = {
   columns: {
     leftTitle: 'CLUB BOATS',
     rightTitle: 'RACE BOATS',
+    tinniesTitle: 'TINNIES',
   },
 
   display: {
@@ -112,6 +115,7 @@ export const DEFAULT_TV_DISPLAY_CONFIG: TVDisplayConfig = {
       singles: '#fffbeb',
       doubles: '#eff6ff',
       quads: '#f0fdf4',
+      tinnies: '#e5e5e5',
       other: '#fafafa',
     },
     rows: {

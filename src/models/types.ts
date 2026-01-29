@@ -4,6 +4,7 @@
 
 export type BoatType = '1X' | '2X' | '4X' | '8X' | 'Unknown';
 export type BoatClassification = 'T' | 'R' | 'RT';
+export type BoatCategory = 'rowing' | 'tinnie';
 export type SessionType = 'morning1' | 'morning2' | 'custom';
 export type DataFreshness = 'fresh' | 'stale' | 'cached';
 
@@ -14,6 +15,7 @@ export interface Asset {
   nickname: string;
   type: BoatType;
   classification: BoatClassification;
+  category: BoatCategory;
   weight: string | null;
   sweepCapable: boolean;
   calendarUrl: string;
