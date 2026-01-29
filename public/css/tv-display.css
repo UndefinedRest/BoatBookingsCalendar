@@ -61,7 +61,7 @@
   --session-row-height: 30px; /* Each session row height (CONFIGURABLE - increase for more spacing) */
 
   /* Multi-Day Display Configuration */
-  --days-to-display: 5; /* CONFIGURABLE: Number of days to show (today + future days) */
+  --days-to-display: 7; /* CONFIGURABLE: Number of days to show (today + future days) */
   --refresh-interval: 300000; /* CONFIGURABLE: Refresh interval in milliseconds (default: 5 minutes) */
 }
 
@@ -533,4 +533,235 @@ body {
 
 .cell-updated {
   animation: flash 1s ease-out;
+}
+
+/* ===== RESPONSIVE LAYOUTS ===== */
+/* TV mode (≥1920px): No changes - existing styles apply */
+
+/* Desktop mode (768px - 1919px) */
+@media screen and (max-width: 1919px) {
+  :root {
+    --font-column-title: 24px;
+    --font-boat-name: 20px;
+    --font-booking: 16px;
+    --font-footer: 16px;
+    --boat-row-height: 50px;
+    --session-row-height: 25px;
+    --boat-name-width: 280px;
+    --margin-screen: 16px;
+    --gap-large: 16px;
+  }
+
+  body {
+    overflow-y: auto; /* Enable vertical scrolling */
+  }
+
+  .tv-display {
+    width: 100%; /* Override 100vw to prevent scrollbar-induced overflow */
+    height: auto;
+    min-height: 100vh;
+    box-sizing: border-box;
+  }
+
+  .two-column-grid {
+    grid-template-columns: 1fr; /* Single column */
+    gap: var(--gap-medium);
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .boat-column {
+    max-height: none; /* Remove height constraint */
+    max-width: 100%; /* Prevent overflow */
+  }
+
+  .boats-list {
+    overflow: visible; /* No internal scroll */
+  }
+
+  /* Ensure day headers and boat entries don't overflow */
+  .day-headers {
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .boat-entry {
+    max-width: 100%;
+  }
+
+  .boat-days-grid {
+    min-width: 0; /* Allow grid to shrink */
+  }
+
+  .day-header {
+    font-size: 14px;
+  }
+
+  .display-footer {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: var(--gap-small);
+  }
+
+  .footer-left, .footer-right {
+    align-items: center;
+  }
+}
+
+/* Mobile mode (<768px) */
+@media screen and (max-width: 767px) {
+  :root {
+    --font-column-title: 16px;
+    --font-boat-name: 12px;
+    --font-booking: 10px;
+    --font-footer: 11px;
+    --boat-row-height: auto;
+    --session-row-height: 18px;
+    --boat-name-width: 110px; /* Narrow boat name to fit days */
+    --margin-screen: 4px;
+    --gap-large: 4px;
+    --gap-medium: 4px;
+    --gap-small: 2px;
+  }
+
+  .tv-display {
+    width: 100%;
+    padding: var(--margin-screen);
+  }
+
+  /* Keep boat-info and days side by side, don't stack */
+  .boat-entry {
+    flex-direction: row;
+    height: auto;
+    min-height: 40px;
+  }
+
+  .boat-info {
+    width: var(--boat-name-width);
+    min-width: var(--boat-name-width);
+    max-width: var(--boat-name-width);
+    padding: 2px 4px;
+    flex-direction: column; /* Stack badge, name, weight vertically */
+    align-items: flex-start;
+    gap: 1px;
+  }
+
+  /* Hide weight badge on mobile to save space */
+  .boat-weight {
+    display: none;
+  }
+
+  /* Smaller type badge */
+  .boat-type-badge {
+    font-size: 9px;
+    padding: 1px 3px;
+  }
+
+  /* Truncate boat name */
+  .boat-name-text {
+    font-size: 11px;
+    max-width: 100px;
+  }
+
+  /* Days grid fills remaining space */
+  .boat-days-grid {
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* Compact day columns */
+  .day-column {
+    min-width: 0;
+  }
+
+  .session-item {
+    height: var(--session-row-height);
+    padding: 0 2px;
+    gap: 2px;
+  }
+
+  /* Hide booking time on mobile, just show member name */
+  .booking-time {
+    display: none;
+  }
+
+  .booking-member {
+    font-size: 9px;
+  }
+
+  /* Compact day headers - uses --days-to-display from config */
+  .day-headers {
+    grid-template-columns: var(--boat-name-width) repeat(var(--days-to-display), 1fr);
+  }
+
+  .day-header-spacer {
+    width: var(--boat-name-width);
+    min-width: var(--boat-name-width);
+  }
+
+  .day-header {
+    font-size: 9px;
+    padding: 2px 1px;
+    min-width: 0;
+  }
+
+  /* Compact column titles */
+  .column-title {
+    padding: var(--gap-small) var(--gap-medium);
+  }
+
+  /* Compact footer */
+  .display-footer {
+    margin-top: var(--gap-medium);
+    padding-top: var(--gap-small);
+    gap: var(--gap-small);
+  }
+
+  .footer-logo {
+    height: 20px;
+  }
+
+  .club-name {
+    font-size: 12px;
+  }
+
+  .footer-right {
+    font-size: 10px;
+  }
+
+  /* Damaged overlay scales down */
+  .damaged-overlay {
+    font-size: 16px;
+    letter-spacing: 2px;
+  }
+
+  /* Hide sweep badge on mobile */
+  .boat-sweep-badge {
+    display: none;
+  }
+}
+
+/* ===== MODE OVERRIDE CLASSES ===== */
+/* Applied via JavaScript when ?mode= query param is present */
+
+body.mode-tv {
+  /* Force TV layout regardless of viewport */
+  overflow: hidden !important;
+}
+
+body.mode-tv .tv-display {
+  height: 100vh !important;
+}
+
+body.mode-tv .two-column-grid {
+  grid-template-columns: 1fr 1fr !important;
+}
+
+body.mode-desktop {
+  overflow: auto !important;
+}
+
+body.mode-mobile .boat-entry {
+  flex-direction: column !important;
+  height: auto !important;
 }

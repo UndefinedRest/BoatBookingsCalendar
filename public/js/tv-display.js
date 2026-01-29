@@ -3,6 +3,20 @@
  * Shows ALL boats split into Club (left) and Race (right) columns
  */
 
+// Detect and apply display mode from query parameter
+function applyDisplayMode() {
+  const params = new URLSearchParams(window.location.search);
+  const mode = params.get('mode');
+
+  if (mode === 'tv' || mode === 'desktop' || mode === 'mobile') {
+    document.body.classList.add(`mode-${mode}`);
+    console.log(`[TV Display] Display mode forced to: ${mode}`);
+  }
+}
+
+// Apply mode immediately on script load
+applyDisplayMode();
+
 class TVDisplayController {
   constructor() {
     this.clockInterval = 1000; // 1 second
@@ -31,7 +45,7 @@ class TVDisplayController {
     this.bookingData = null;
     this.config = null;
     this.tvDisplayConfig = null;
-    this.daysToDisplay = 5; // Will be overridden by tvDisplayConfig
+    this.daysToDisplay = 7; // Will be overridden by tvDisplayConfig
     this.refreshInterval = 300000; // Will be overridden by tvDisplayConfig
     this.refreshTimer = null; // Store timer reference for proper cleanup
     this.configCheckTimer = null; // Timer for checking config changes
