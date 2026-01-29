@@ -498,9 +498,9 @@ class TVDisplayController {
       entry.classList.add('damaged-boat');
     }
 
-    // Build boat info HTML
+    // Build boat info HTML (no type badge for tinnies)
     let boatInfoHTML = `
-      <span class="boat-type-badge">${boat.type}</span>
+      ${isTinnie ? '' : `<span class="boat-type-badge">${boat.type}</span>`}
       ${isDamaged ? '<span class="damaged-icon" title="Boat is damaged">⚠️</span>' : ''}
       <span class="boat-name-text" title="${this.escapeHtml(boatName)}">${this.escapeHtml(boatName)}</span>
     `;
