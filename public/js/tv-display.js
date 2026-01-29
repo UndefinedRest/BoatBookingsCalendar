@@ -51,6 +51,8 @@ class TVDisplayController {
     this.configCheckTimer = null; // Timer for checking config changes
     this.lastConfigVersion = null; // Track config version for change detection
     this.isInitialLoad = true; // Track if this is the first load
+    this.countdownTimer = null; // Timer for countdown display
+    this.countdownSeconds = 0; // Seconds remaining until next refresh
   }
 
   /**
@@ -190,12 +192,8 @@ class TVDisplayController {
       this.elements.footerLogo.style.display = ''; // Ensure it's visible
     }
 
-    // Update auto-refresh display
-    const autoRefreshDisplay = document.getElementById('autoRefreshDisplay');
-    if (autoRefreshDisplay && config.timing && config.timing.refreshInterval) {
-      const minutes = Math.round(config.timing.refreshInterval / 60000);
-      autoRefreshDisplay.textContent = `• Auto-refresh: ${minutes} min`;
-    }
+    // Start/restart countdown timer with new refresh interval
+    this.startCountdown();
 
     console.log('[TV Display] Configuration applied successfully');
   }
@@ -300,8 +298,9 @@ class TVDisplayController {
         console.log('[TV Display] Background update complete - display updated silently');
       }
 
-      // Update last updated timestamp
+      // Update last updated timestamp and reset countdown
       this.updateLastUpdated();
+      this.startCountdown();
 
     } catch (error) {
       console.error('[TV Display] Error loading data:', error);
@@ -715,6 +714,47 @@ class TVDisplayController {
       hour12: false
     });
     this.elements.lastUpdated.textContent = `Last updated: ${timeStr}`;
+  }
+
+  /**
+   * Start or restart the countdown timer to next refresh
+   */
+  startCountdown() {
+    // Clear any existing countdown timer
+    if (this.countdownTimer) {
+      clearInterval(this.countdownTimer);
+    }
+
+    // Reset countdown to full refresh interval (in seconds)
+    this.countdownSeconds = Math.round(this.refreshInterval / 1000);
+
+    const autoRefreshDisplay = document.getElementById('autoRefreshDisplay');
+    if (!autoRefreshDisplay) return;
+
+    // Update display immediately
+    this.updateCountdownDisplay(autoRefreshDisplay);
+
+    // Start countdown interval (every second)
+    this.countdownTimer = setInterval(() => {
+      this.countdownSeconds--;
+
+      if (this.countdownSeconds <= 0) {
+        // Countdown complete - will be reset when data loads
+        this.countdownSeconds = 0;
+      }
+
+      this.updateCountdownDisplay(autoRefreshDisplay);
+    }, 1000);
+  }
+
+  /**
+   * Update the countdown display element
+   */
+  updateCountdownDisplay(element) {
+    const minutes = Math.floor(this.countdownSeconds / 60);
+    const seconds = this.countdownSeconds % 60;
+    const timeStr = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    element.textContent = `• Next update: ${timeStr}`;
   }
 
   /**
