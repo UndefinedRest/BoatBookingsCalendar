@@ -538,16 +538,16 @@ body {
 /* ===== RESPONSIVE LAYOUTS ===== */
 /* TV mode (≥1920px): No changes - existing styles apply */
 
-/* Desktop mode (768px - 1919px) */
-@media screen and (max-width: 1919px) {
+/* Desktop Wide (1200px - 1919px): Two-column layout like TV */
+@media screen and (min-width: 1200px) and (max-width: 1919px) {
   :root {
-    --font-column-title: 24px;
-    --font-boat-name: 20px;
-    --font-booking: 16px;
-    --font-footer: 16px;
-    --boat-row-height: 50px;
-    --session-row-height: 25px;
-    --boat-name-width: 280px;
+    --font-column-title: 22px;
+    --font-boat-name: 16px;
+    --font-booking: 14px;
+    --font-footer: 14px;
+    --boat-row-height: 44px;
+    --session-row-height: 22px;
+    --boat-name-width: 200px;
     --margin-screen: 16px;
     --gap-large: 16px;
   }
@@ -557,7 +557,82 @@ body {
   }
 
   .tv-display {
-    width: 100%; /* Override 100vw to prevent scrollbar-induced overflow */
+    width: 100%;
+    height: auto;
+    min-height: 100vh;
+    box-sizing: border-box;
+  }
+
+  /* Keep two-column layout like TV mode */
+  .two-column-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--gap-large);
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .boat-column {
+    max-height: none;
+    max-width: 100%;
+  }
+
+  .boats-list {
+    overflow: visible;
+  }
+
+  .day-headers {
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .boat-entry {
+    max-width: 100%;
+  }
+
+  .boat-days-grid {
+    min-width: 0;
+  }
+
+  .day-header {
+    font-size: 12px;
+  }
+
+  .boat-type-badge {
+    font-size: 11px;
+    padding: 1px 4px;
+  }
+
+  .boat-weight {
+    font-size: 11px;
+    padding: 1px 4px;
+  }
+
+  .display-footer {
+    grid-template-columns: 1fr auto 1fr;
+    text-align: left;
+  }
+}
+
+/* Desktop Narrow / Tablet (768px - 1199px): Single column with sticky headers */
+@media screen and (min-width: 768px) and (max-width: 1199px) {
+  :root {
+    --font-column-title: 20px;
+    --font-boat-name: 16px;
+    --font-booking: 14px;
+    --font-footer: 14px;
+    --boat-row-height: 46px;
+    --session-row-height: 23px;
+    --boat-name-width: 220px;
+    --margin-screen: 12px;
+    --gap-large: 12px;
+  }
+
+  body {
+    overflow-y: auto;
+  }
+
+  .tv-display {
+    width: 100%;
     height: auto;
     min-height: 100vh;
     box-sizing: border-box;
@@ -571,18 +646,28 @@ body {
   }
 
   .boat-column {
-    max-height: none; /* Remove height constraint */
-    max-width: 100%; /* Prevent overflow */
+    max-height: none;
+    max-width: 100%;
+  }
+
+  /* Sticky section headers */
+  .column-title {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
+
+  /* Sticky day headers below section title */
+  .day-headers {
+    position: sticky;
+    top: 52px; /* Height of column-title */
+    z-index: 19;
+    max-width: 100%;
+    overflow: hidden;
   }
 
   .boats-list {
-    overflow: visible; /* No internal scroll */
-  }
-
-  /* Ensure day headers and boat entries don't overflow */
-  .day-headers {
-    max-width: 100%;
-    overflow: hidden;
+    overflow: visible;
   }
 
   .boat-entry {
@@ -590,11 +675,11 @@ body {
   }
 
   .boat-days-grid {
-    min-width: 0; /* Allow grid to shrink */
+    min-width: 0;
   }
 
   .day-header {
-    font-size: 14px;
+    font-size: 13px;
   }
 
   .display-footer {
@@ -738,6 +823,106 @@ body {
   /* Hide sweep badge on mobile */
   .boat-sweep-badge {
     display: none;
+  }
+}
+
+/* ===== MOBILE LANDSCAPE VIEW ===== */
+/* Improved grid readability for landscape phones/small tablets */
+@media screen and (max-width: 767px) and (orientation: landscape) {
+  :root {
+    --font-column-title: 14px;
+    --font-boat-name: 13px;
+    --font-booking: 11px;
+    --font-footer: 10px;
+    --boat-row-height: 36px;
+    --session-row-height: 18px;
+    --boat-name-width: 130px;
+    --margin-screen: 6px;
+    --gap-large: 6px;
+    --gap-medium: 4px;
+  }
+
+  /* Show grid view (already default), ensure mobile portrait view hidden */
+  .mobile-portrait-view {
+    display: none !important;
+  }
+
+  .two-column-grid {
+    display: grid !important;
+    grid-template-columns: 1fr; /* Single column in landscape */
+  }
+
+  /* Sticky section headers */
+  .column-title {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    padding: 6px 10px;
+  }
+
+  /* Sticky day headers */
+  .day-headers {
+    position: sticky;
+    top: 32px;
+    z-index: 19;
+  }
+
+  .day-header {
+    font-size: 10px;
+    padding: 3px 2px;
+  }
+
+  /* More readable boat info */
+  .boat-info {
+    flex-direction: row; /* Keep horizontal layout */
+    align-items: center;
+    gap: 4px;
+    padding: 2px 4px;
+  }
+
+  .boat-type-badge {
+    font-size: 10px;
+    padding: 1px 4px;
+  }
+
+  .boat-name-text {
+    font-size: var(--font-boat-name);
+  }
+
+  /* Show booking times in landscape (more space than portrait) */
+  .booking-time {
+    display: inline;
+    font-size: 10px;
+  }
+
+  .booking-member {
+    font-size: var(--font-booking);
+  }
+
+  .session-item {
+    gap: 3px;
+    padding: 0 3px;
+  }
+
+  /* Compact footer for landscape */
+  .display-footer {
+    padding-top: 4px;
+    margin-top: 4px;
+    gap: 4px;
+  }
+
+  .footer-logo {
+    height: 18px;
+  }
+
+  .club-name {
+    font-size: 11px;
+  }
+
+  /* Smaller damaged overlay */
+  .damaged-overlay {
+    font-size: 14px;
+    letter-spacing: 2px;
   }
 }
 
