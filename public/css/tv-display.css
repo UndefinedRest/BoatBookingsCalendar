@@ -741,6 +741,374 @@ body {
   }
 }
 
+/* ===== MOBILE PORTRAIT VIEW ===== */
+/* Single-day card view for mobile in portrait orientation */
+
+/* Hide mobile view by default */
+.mobile-portrait-view {
+  display: none;
+}
+
+/* Mobile Portrait Mode (<768px AND portrait orientation) */
+@media screen and (max-width: 767px) and (orientation: portrait) {
+  /* Make the whole display a flex column with fixed header/footer */
+  .tv-display {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh; /* Dynamic viewport height for mobile browsers */
+    overflow: hidden;
+  }
+
+  /* Show mobile portrait view, hide grid view */
+  .mobile-portrait-view {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+    min-height: 0; /* Important for flex child scrolling */
+  }
+
+  .two-column-grid {
+    display: none !important;
+  }
+
+  /* Reset some mobile-landscape cramped styles */
+  :root {
+    --font-column-title: 16px;
+    --font-boat-name: 15px;
+    --font-booking: 14px;
+    --margin-screen: 8px;
+    --gap-small: 6px;
+    --gap-medium: 10px;
+  }
+
+  /* ===== Day Navigation (Sticky Header) ===== */
+  .day-nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 0;
+    border-bottom: 2px solid var(--border-medium);
+    background: var(--bg-primary);
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .day-nav-arrow {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: var(--accent-navy);
+    color: white;
+    font-size: 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .day-nav-arrow:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .day-nav-arrow:active:not(:disabled) {
+    transform: scale(0.95);
+  }
+
+  .day-nav-tabs {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    flex: 1;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    padding: 0 4px;
+  }
+
+  .day-nav-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .day-tab {
+    padding: 8px 14px;
+    border: 2px solid var(--border-medium);
+    border-radius: 8px;
+    background: white;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    scroll-snap-align: center;
+    transition: all 0.2s ease;
+  }
+
+  .day-tab.active {
+    background: var(--accent-navy);
+    border-color: var(--accent-navy);
+    color: white;
+  }
+
+  .day-tab:active {
+    transform: scale(0.97);
+  }
+
+  /* ===== Mobile Cards Container (Scrollable Area) ===== */
+  .mobile-cards-container {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: var(--gap-medium) var(--margin-screen);
+    min-height: 0; /* Critical for flex child scrolling */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* ===== Section Headers ===== */
+  .mobile-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    background: var(--accent-navy);
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: var(--gap-small);
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .mobile-section-header .section-toggle {
+    font-size: 12px;
+    opacity: 0.8;
+  }
+
+  .mobile-section-header.collapsed + .mobile-section-boats {
+    display: none;
+  }
+
+  .mobile-section-boats {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-small);
+    margin-bottom: var(--gap-medium);
+  }
+
+  /* ===== Boat Cards ===== */
+  .mobile-boat-card {
+    background: white;
+    border: 1px solid var(--border-medium);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+
+  .mobile-boat-card.damaged {
+    border-color: var(--damaged-icon-color);
+    background: var(--damaged-row-bg);
+  }
+
+  .mobile-boat-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  /* Boat type background colors for card headers */
+  .mobile-boat-card.type-1x .mobile-boat-header {
+    background: var(--boat-type-1x-bg);
+  }
+
+  .mobile-boat-card.type-2x .mobile-boat-header {
+    background: var(--boat-type-2x-bg);
+  }
+
+  .mobile-boat-card.type-4x .mobile-boat-header {
+    background: var(--boat-type-4x-bg);
+  }
+
+  .mobile-boat-card.type-tinnie .mobile-boat-header {
+    background: var(--boat-type-tinnies-bg);
+  }
+
+  .mobile-boat-card.type-other .mobile-boat-header {
+    background: var(--boat-type-other-bg);
+  }
+
+  .mobile-boat-badge {
+    background: var(--boat-type-badge-bg, var(--accent-blue));
+    color: white;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .mobile-boat-name {
+    font-size: var(--font-boat-name);
+    font-weight: 700;
+    color: var(--text-primary);
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mobile-boat-weight {
+    font-size: 12px;
+    color: var(--text-secondary);
+    background: #e2e8f0;
+    padding: 2px 6px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  .mobile-damaged-badge {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--damaged-icon-color);
+    background: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--damaged-icon-color);
+  }
+
+  /* ===== Session Rows ===== */
+  .mobile-sessions {
+    padding: 0;
+  }
+
+  .mobile-session-row {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-light);
+    min-height: 44px; /* Touch-friendly height */
+  }
+
+  .mobile-session-row:last-child {
+    border-bottom: none;
+  }
+
+  .mobile-session-label {
+    width: 36px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+  }
+
+  .mobile-session-time {
+    width: 50px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--booking-time-color, var(--status-booked));
+    flex-shrink: 0;
+  }
+
+  .mobile-session-member {
+    flex: 1;
+    font-size: var(--font-booking);
+    color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mobile-session-available {
+    color: var(--text-light);
+    font-style: italic;
+  }
+
+  /* Damaged boat sessions */
+  .mobile-boat-card.damaged .mobile-sessions {
+    position: relative;
+  }
+
+  .mobile-boat-card.damaged .mobile-session-row {
+    opacity: 0.5;
+  }
+
+  .mobile-damaged-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--damaged-text-color);
+    opacity: 0.3;
+    pointer-events: none;
+    letter-spacing: 4px;
+  }
+
+  /* ===== Empty State ===== */
+  .mobile-no-bookings {
+    text-align: center;
+    padding: 32px 16px;
+    color: var(--text-secondary);
+    font-size: 14px;
+  }
+
+  /* ===== Footer (Sticky Bottom) ===== */
+  .display-footer {
+    padding: var(--gap-small) var(--margin-screen);
+    margin-top: 0;
+    border-top: 2px solid var(--border-medium);
+    background: var(--bg-primary);
+    flex-shrink: 0;
+    position: sticky;
+    bottom: 0;
+    z-index: 100;
+  }
+
+  .footer-center {
+    order: -1; /* Move logo/name to top */
+    margin-bottom: var(--gap-small);
+  }
+
+  .footer-logo {
+    height: 24px;
+  }
+
+  .club-name {
+    font-size: 13px;
+  }
+
+  .footer-left, .footer-right {
+    font-size: 11px;
+  }
+
+  .auto-refresh {
+    display: none; /* Hide countdown on mobile */
+  }
+
+  /* Ensure view container allows footer to be sticky */
+  .view-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
+}
+
 /* ===== MODE OVERRIDE CLASSES ===== */
 /* Applied via JavaScript when ?mode= query param is present */
 

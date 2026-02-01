@@ -25,6 +25,25 @@
 
         <!-- Main Content: Two-Column All Boats View -->
         <main class="view-container hidden" id="mainView">
+
+            <!-- Mobile Portrait View (hidden on desktop/landscape) -->
+            <div class="mobile-portrait-view" id="mobilePortraitView">
+                <!-- Day Navigation Tabs -->
+                <nav class="day-nav" id="dayNav">
+                    <button class="day-nav-arrow day-nav-prev" id="dayNavPrev" aria-label="Previous day">◄</button>
+                    <div class="day-nav-tabs" id="dayNavTabs">
+                        <!-- Day tabs will be inserted by JavaScript -->
+                    </div>
+                    <button class="day-nav-arrow day-nav-next" id="dayNavNext" aria-label="Next day">►</button>
+                </nav>
+
+                <!-- Mobile Cards Container -->
+                <div class="mobile-cards-container" id="mobileCardsContainer">
+                    <!-- Boat cards will be inserted by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Desktop/TV Grid View (hidden on mobile portrait) -->
             <div class="two-column-grid">
                 <!-- Left Column: Club Boats -->
                 <div class="boat-column">
