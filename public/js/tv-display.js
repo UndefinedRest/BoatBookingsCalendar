@@ -63,6 +63,9 @@ class TVDisplayController {
     // Mobile portrait view state
     this.selectedDayIndex = 0; // 0 = today, 1 = tomorrow, etc.
     this.collapsedSections = new Set(); // Track which sections are collapsed
+
+    // Tooltip element (for desktop hover)
+    this.tooltipElement = null;
   }
 
   /**
@@ -82,6 +85,9 @@ class TVDisplayController {
 
     // Setup mobile view event listeners
     this.setupMobileEventListeners();
+
+    // Setup desktop tooltip
+    this.setupTooltip();
 
     // Listen for orientation changes
     window.addEventListener('orientationchange', () => {
@@ -140,6 +146,103 @@ class TVDisplayController {
         }
       });
     }
+  }
+
+  /**
+   * Setup tooltip for desktop hover on bookings
+   */
+  setupTooltip() {
+    // Only setup on devices with hover capability
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      return;
+    }
+
+    // Create tooltip element
+    this.tooltipElement = document.createElement('div');
+    this.tooltipElement.className = 'booking-tooltip';
+    this.tooltipElement.innerHTML = `
+      <div class="tooltip-boat"></div>
+      <div class="tooltip-member"></div>
+      <div class="tooltip-time"></div>
+    `;
+    document.body.appendChild(this.tooltipElement);
+
+    // Use event delegation on the main view container
+    const container = this.elements.mainView;
+    if (!container) return;
+
+    container.addEventListener('mouseenter', (e) => {
+      const target = e.target.closest('.session-item.has-booking');
+      if (target) {
+        this.showTooltip(target);
+      }
+    }, true);
+
+    container.addEventListener('mouseleave', (e) => {
+      const target = e.target.closest('.session-item.has-booking');
+      if (target) {
+        this.hideTooltip();
+      }
+    }, true);
+
+    container.addEventListener('mousemove', (e) => {
+      if (this.tooltipElement.classList.contains('visible')) {
+        this.positionTooltip(e.clientX, e.clientY);
+      }
+    });
+  }
+
+  /**
+   * Show tooltip with booking details
+   */
+  showTooltip(element) {
+    const boat = element.getAttribute('data-tooltip-boat');
+    const member = element.getAttribute('data-tooltip-member');
+    const time = element.getAttribute('data-tooltip-time');
+
+    this.tooltipElement.querySelector('.tooltip-boat').textContent = boat;
+    this.tooltipElement.querySelector('.tooltip-member').textContent = member;
+    this.tooltipElement.querySelector('.tooltip-time').textContent = time;
+
+    this.tooltipElement.classList.add('visible');
+  }
+
+  /**
+   * Hide tooltip
+   */
+  hideTooltip() {
+    if (this.tooltipElement) {
+      this.tooltipElement.classList.remove('visible');
+    }
+  }
+
+  /**
+   * Position tooltip near cursor
+   */
+  positionTooltip(x, y) {
+    const tooltip = this.tooltipElement;
+    const padding = 15;
+
+    // Position above and to the right of cursor
+    let left = x + padding;
+    let top = y - tooltip.offsetHeight - padding;
+
+    // Keep within viewport bounds
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    // Flip to left if too close to right edge
+    if (left + tooltip.offsetWidth > viewportWidth - padding) {
+      left = x - tooltip.offsetWidth - padding;
+    }
+
+    // Flip below if too close to top
+    if (top < padding) {
+      top = y + padding;
+    }
+
+    tooltip.style.left = `${left}px`;
+    tooltip.style.top = `${top}px`;
   }
 
   /**
@@ -869,11 +972,11 @@ class TVDisplayController {
       const bookings = this.getBookingsForDate(boat, dateStr);
 
       // AM1 session for this day
-      const am1 = this.createSessionItem(bookings.morning1);
+      const am1 = this.createSessionItem(bookings.morning1, boatName);
       dayColumn.appendChild(am1);
 
       // AM2 session for this day
-      const am2 = this.createSessionItem(bookings.morning2);
+      const am2 = this.createSessionItem(bookings.morning2, boatName);
       dayColumn.appendChild(am2);
 
       daysGrid.appendChild(dayColumn);
@@ -895,13 +998,19 @@ class TVDisplayController {
   /**
    * Create a session item - without label
    */
-  createSessionItem(booking) {
+  createSessionItem(booking, boatName = '') {
     const item = document.createElement('div');
     item.className = 'session-item';
 
     if (booking) {
       // Format member name based on configuration
       const formattedName = this.formatMemberName(booking.memberName);
+
+      // Add tooltip data for desktop hover
+      item.classList.add('has-booking');
+      item.setAttribute('data-tooltip-boat', boatName);
+      item.setAttribute('data-tooltip-member', booking.memberName);
+      item.setAttribute('data-tooltip-time', `${booking.startTime} - ${booking.endTime}`);
 
       // Show booking: start time + member name (no label)
       item.innerHTML = `

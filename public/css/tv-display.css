@@ -400,6 +400,53 @@ body {
   min-width: 0; /* Critical for ellipsis to work in flexbox */
 }
 
+/* ===== Desktop Hover Tooltips ===== */
+/* JavaScript-based tooltip (appended to body to avoid overflow clipping) */
+@media (hover: hover) and (pointer: fine) {
+  .session-item.has-booking {
+    cursor: pointer;
+  }
+}
+
+/* Tooltip element (created by JavaScript) */
+.booking-tooltip {
+  position: fixed;
+  background: var(--bg-dark, #1a1a2e);
+  color: var(--text-on-dark, #ffffff);
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.6;
+  min-width: 160px;
+  max-width: 280px;
+  text-align: left;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 10000;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.booking-tooltip.visible {
+  opacity: 1;
+}
+
+.booking-tooltip .tooltip-boat {
+  font-weight: 700;
+  color: var(--accent-gold, #f4c430);
+  margin-bottom: 4px;
+}
+
+.booking-tooltip .tooltip-member {
+  font-weight: 600;
+}
+
+.booking-tooltip .tooltip-time {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  margin-top: 2px;
+}
+
 .status-available-text {
   color: var(--text-light);
   font-style: italic;
