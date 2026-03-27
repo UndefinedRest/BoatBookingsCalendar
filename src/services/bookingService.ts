@@ -3,7 +3,6 @@
  * Uses JSON API endpoint /bookings/retrieve-calendar/{boatId}
  */
 
-import { parseISO, format } from 'date-fns';
 import { RawBookingsArraySchema } from '../models/schemas.js';
 import type {
   Asset,
@@ -146,13 +145,10 @@ export class BookingService {
    * Transform raw API booking to our format
    */
   private transformBooking(raw: RawBooking, boatId: string): Booking {
-    // Parse ISO datetime strings
-    const startDate = parseISO(raw.start);
-    const endDate = parseISO(raw.end);
-
-    const date = format(startDate, 'yyyy-MM-dd');
-    const startTime = format(startDate, 'HH:mm');
-    const endTime = format(endDate, 'HH:mm');
+    // Extract date and time directly from ISO string to avoid timezone dependency
+    const date = raw.start.substring(0, 10);
+    const startTime = raw.start.substring(11, 16);
+    const endTime = raw.end.substring(11, 16);
 
     // Extract member name from title (e.g., "Booked by John Smith" -> "John Smith")
     const memberName = raw.title.replace(/^Booked by\s*/i, '').trim();

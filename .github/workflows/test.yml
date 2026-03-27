@@ -26,6 +26,10 @@ jobs:
 
       - name: Run tests with coverage
         run: npm run test:coverage
+        env:
+          REVSPORT_BASE_URL: https://www.example.com
+          REVSPORT_USERNAME: test-user
+          REVSPORT_PASSWORD: test-password
 
       - name: Check coverage thresholds
         run: |
