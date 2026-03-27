@@ -56,7 +56,7 @@ export const TVDisplayConfigSchema = z.object({
     ui: z.object({
       boatTypeBadge: ColorSchema.default('#0ea5e9'),
       columnHeader: ColorSchema.default('#1e40af'),
-      bookingTime: ColorSchema.default('#dc2626'),
+      bookingTime: ColorSchema.default('#64748b'),
       typeSeparator: ColorSchema.default('#64748b'),
     }),
     damaged: z.object({
@@ -125,7 +125,7 @@ export const DEFAULT_TV_DISPLAY_CONFIG: TVDisplayConfig = {
     ui: {
       boatTypeBadge: '#0ea5e9',
       columnHeader: '#1e40af',
-      bookingTime: '#dc2626',
+      bookingTime: '#64748b',
       typeSeparator: '#64748b',
     },
     damaged: {
