@@ -218,7 +218,7 @@ body {
   align-items: center;
   justify-content: center;
   padding: var(--gap-small);
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--accent-navy);
   text-align: center;
@@ -302,7 +302,7 @@ body {
   color: white;
   padding: 2px 6px;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   flex-shrink: 0;
 }
@@ -328,7 +328,7 @@ body {
 }
 
 .boat-weight {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--text-secondary);
   padding: 2px 6px;
@@ -338,7 +338,7 @@ body {
 }
 
 .boat-sweep-badge {
-  font-size: 11px; /* Smaller font as requested */
+  font-size: 13px;
   font-weight: 600;
   color: white;
   padding: 2px 5px;
@@ -384,14 +384,16 @@ body {
 }
 
 .booking-time {
-  font-weight: 700;
-  color: var(--booking-time-color, var(--status-booked));
+  font-weight: 400;
+  color: var(--booking-time-color, var(--text-secondary));
   font-variant-numeric: tabular-nums;
   flex-shrink: 0; /* Prevent time from shrinking */
-  font-size: calc(var(--font-booking) * 0.9); /* Slightly smaller than member name */
+  font-size: calc(var(--font-booking) * 0.72); /* Small label — name is the dominant element */
+  order: -1; /* Show time before member name */
 }
 
 .booking-member {
+  font-weight: 700;
   color: var(--text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
